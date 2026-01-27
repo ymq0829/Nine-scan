@@ -261,14 +261,17 @@ func runCommandLineMode() {
 		logger,
 	)
 
+	// 初始化扫描状态管理器
+	scanStatus := controller.NewScanStatusManager()
+
 	// 5. 使用调度器执行扫描任务
 	fmt.Println("开始ICMP扫描...")
 
 	// 修复命令行模式下的进度回调（第270行附近）
 	hosts := scheduler.Schedule(func() interface{} {
 		icmpScanner.SetProgressCallback(func(current, total int) {
-			// 使用公共方法获取当前扫描方法
-			scanMethod := icmpScanner.GetCurrentScanMethod()
+			// 使用扫描状态管理器获取当前扫描方法
+			scanMethod := scanStatus.GetCurrentScanMethod()
 
 			progress := (float64(current) / float64(total)) * 100
 			if progress > 100 {
@@ -288,6 +291,7 @@ func runCommandLineMode() {
 	if scanResult, ok := hosts.(scanner.ScanResult); ok {
 		aliveHosts = scanResult.Hosts
 		scanMethod = scanResult.ScanMethod
+		scanStatus.SetCurrentScanMethod(scanMethod)
 		// 转换为字符串切片
 		for _, hostInfo := range aliveHosts {
 			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
@@ -451,7 +455,8 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 
 	// 将scanner.HostInfo转换为字符串切片用于端口扫描
 	var aliveHostStrings []string
-
+	// 初始化扫描状态管理器
+	scanStatus := controller.NewScanStatusManager()
 	// 1. 主机存活性探测（使用调度器）
 	ui.ShowScanProgress("ICMP扫描", 0, len(params.Targets))
 	// 修复交互模式下的进度回调（第463行附近）
@@ -459,7 +464,7 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 		// 设置进度回调，动态获取扫描方法
 		icmpScanner.SetProgressCallback(func(current, total int) {
 			// 使用公共方法获取当前扫描方法
-			scanMethod := icmpScanner.GetCurrentScanMethod()
+			scanMethod := scanStatus.GetCurrentScanMethod()
 			ui.ShowScanProgress(scanMethod, current, total)
 		})
 
@@ -478,6 +483,7 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	if scanResult, ok := hosts.(scanner.ScanResult); ok {
 		aliveHosts = scanResult.Hosts
 		scanMethod = scanResult.ScanMethod
+		scanStatus.SetCurrentScanMethod(scanMethod)
 		// 转换为字符串切片
 		for _, hostInfo := range aliveHosts {
 			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)

@@ -32,7 +32,14 @@ func (d *OSDetector) DetectWithTTL(hostInfos []HostInfo) (interface{}, error) {
 			continue
 		}
 
-		// 如果TTL为0，表示无法获取TTL值（可能是TCP扫描的结果）
+		// 如果TTL为-1，表示ICMP探测失败，无法获取TTL值
+		if hostInfo.TTL == -1 {
+			d.Logger.Logf("主机 %s ICMP探测失败，TTL未知，使用智能检测", hostInfo.Host)
+			osInfo[hostInfo.Host] = d.detectOSIntelligently(hostInfo.Host)
+			continue
+		}
+
+		// 如果TTL为0，表示TCP扫描的结果（兼容旧代码）
 		if hostInfo.TTL == 0 {
 			d.Logger.Logf("主机 %s TTL未知，使用智能检测", hostInfo.Host)
 			osInfo[hostInfo.Host] = d.detectOSIntelligently(hostInfo.Host)

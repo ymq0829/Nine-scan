@@ -20,8 +20,6 @@ import (
 
 	"syscall"
 
-	"golang.org/x/net/icmp"
-	"golang.org/x/net/ipv4"
 	"golang.org/x/sys/windows"
 )
 
@@ -78,12 +76,12 @@ type HostInfo struct {
 
 // ICMPScanner ICMP扫描器结构体
 type ICMPScanner struct {
-	targets           []string
-	logger            *controller.Logger
-	progressCallback  func(current, total int)
-	delayType         controller.DelayType // 延迟类型
-	delayValue        int                  // 延迟基础值
-	currentScanMethod string               // 当前扫描方法
+	targets          []string
+	logger           *controller.Logger
+	config           ICMPConfig // 新增：统一配置管理
+	progressCallback func(current, total int)
+	delayType        controller.DelayType // 延迟类型
+	delayValue       int                  // 延迟基础值
 }
 
 // 准备接收地址结构
@@ -117,6 +115,65 @@ var (
 	procSendto      = modws2_32.NewProc("sendto")
 	procRecvfrom    = modws2_32.NewProc("recvfrom")
 )
+
+// ========== 包级工具函数 ==========
+
+// CheckAdminPrivileges 检查管理员权限（抽离为包级函数）
+func CheckAdminPrivileges() bool {
+	if runtime.GOOS != "windows" {
+		return true
+	}
+
+	// 尝试打开需要管理员权限的设备
+	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	return err == nil
+}
+
+// ParseIPRange 解析IP范围格式如"192.168.1.1-254"（抽离为包级函数）
+func ParseIPRange(ipRange string) ([]string, error) {
+	parts := strings.Split(ipRange, "-")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid IP range format")
+	}
+
+	baseIP := parts[0]
+	lastOctetRange := parts[1]
+
+	ipParts := strings.Split(baseIP, ".")
+	if len(ipParts) != 4 {
+		return nil, fmt.Errorf("invalid IP address")
+	}
+
+	start, err := strconv.Atoi(ipParts[3])
+	if err != nil {
+		return nil, fmt.Errorf("invalid last octet")
+	}
+
+	end, err := strconv.Atoi(lastOctetRange)
+	if err != nil {
+		return nil, fmt.Errorf("invalid range end")
+	}
+
+	var ips []string
+	for i := start; i <= end; i++ {
+		ips = append(ips, fmt.Sprintf("%s.%s.%s.%d", ipParts[0], ipParts[1], ipParts[2], i))
+	}
+	return ips, nil
+}
+
+// ValidateIP 验证IP地址格式（新增通用函数）
+func ValidateIP(ip string) error {
+	parsedIP := net.ParseIP(ip)
+	if parsedIP == nil {
+		return fmt.Errorf("无效的IP地址: %s", ip)
+	}
+	if parsedIP.To4() == nil {
+		return fmt.Errorf("不是IPv4地址: %s", ip)
+	}
+	return nil
+}
+
+// ========== Windows原始套接字相关函数 ==========
 
 // 初始化Windows Socket
 func initWinsock() error {
@@ -316,30 +373,30 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 	return buf[:r], srcIP, nil
 }
 
-// 简化的提权检查，使用与main.go相同的逻辑
-func (s *ICMPScanner) ensureAdminPrivileges() bool {
-	if runtime.GOOS != "windows" {
-		return true // 非Windows平台不需要提权
-	}
+// ========== ICMP核心逻辑函数 ==========
 
-	// 使用与main.go相同的权限检查方法
-	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
-	if err == nil {
-		s.logger.Log("具有管理员权限，可以执行ICMP扫描")
-		return true // 已经是管理员
-	}
-
-	s.logger.Log("当前不是管理员权限，ICMP扫描可能受限，将使用TCP扫描")
-	return false
-}
-
-// SendEchoRequest sends an ICMP echo request to the target and returns TTL value
+// SendEchoRequest 发送ICMP Echo请求并等待响应（专注ICMP扫描，不内置TCP兜底）
 func SendEchoRequest(target string, config ICMPConfig) (bool, int, error) {
-	// 尝试使用Windows原始套接字API
-	return sendWithWindowsRawSocket(target, config)
+	// 验证IP地址格式
+	if err := ValidateIP(target); err != nil {
+		return false, -1, fmt.Errorf("IP地址验证失败: %v", err)
+	}
+
+	// 检查管理员权限
+	if !CheckAdminPrivileges() {
+		return false, -1, fmt.Errorf("需要管理员权限才能使用ICMP原始套接字")
+	}
+
+	// 使用Windows原始套接字进行ICMP扫描
+	alive, ttl, err := sendWithWindowsRawSocket(target, config)
+	if err != nil {
+		return false, -1, fmt.Errorf("ICMP扫描失败: %v", err)
+	}
+
+	return alive, ttl, nil
 }
 
-// sendWithWindowsRawSocket 使用Windows API原始套接字
+// sendWithWindowsRawSocket 使用Windows API原始套接字（专注ICMP逻辑）
 func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -348,14 +405,6 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 			}
 		}
 	}()
-
-	// 检查管理员权限
-	if !checkAdminPrivileges() {
-		if config.Logger != nil {
-			config.Logger.Log("需要管理员权限才能使用原始套接字，回退到TCP扫描")
-		}
-		return false, 0, fmt.Errorf("权限不足")
-	}
 
 	// 解析目标IP
 	dstIP := net.ParseIP(target)
@@ -370,19 +419,13 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 	// 创建Windows原始套接字
 	sock, err := CreateWindowsRawSocket()
 	if err != nil {
-		if config.Logger != nil {
-			config.Logger.Logf("创建Windows原始套接字失败: %v，回退到TCP扫描", err)
-		}
-		return false, 0, err
+		return false, 0, fmt.Errorf("创建原始套接字失败: %v", err)
 	}
 	defer sock.Close()
 
 	// 设置超时
 	if err := sock.SetTimeout(config.Timeout); err != nil {
-		if config.Logger != nil {
-			config.Logger.Logf("设置套接字超时失败: %v，回退到TCP扫描", err)
-		}
-		return false, 0, err
+		return false, 0, fmt.Errorf("设置套接字超时失败: %v", err)
 	}
 
 	// 尝试发送和接收ICMP包
@@ -400,7 +443,6 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 			}
 			continue
 		}
-
 		// 接收响应
 		response, srcIP, err := sock.ReceiveICMPResponse()
 		if err != nil {
@@ -409,10 +451,7 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 					config.Logger.Logf("接收超时: %s", target)
 				}
 			} else {
-				if config.Logger != nil {
-					config.Logger.Logf("接收失败: %v，回退到TCP扫描", err)
-				}
-				return false, 0, err
+				return false, 0, fmt.Errorf("接收失败: %v", err)
 			}
 			continue
 		}
@@ -448,6 +487,27 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 	return false, 0, nil
 }
 
+// ========== TCP扫描函数（用于降级） ==========
+
+// scanWithTCP 使用TCP连接进行存活性检测（独立函数）
+func scanWithTCP(target string, config ICMPConfig) (bool, error) {
+	// 使用常见的TCP端口进行连接测试
+	commonPorts := []int{80, 443, 22, 3389, 21, 23, 25, 53, 110, 143, 445, 3306, 8080}
+
+	for _, port := range commonPorts {
+		addr := net.JoinHostPort(target, fmt.Sprintf("%d", port))
+		conn, err := net.DialTimeout("tcp", addr, config.Timeout)
+		if err == nil {
+			conn.Close()
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+// ========== ICMP包构建函数 ==========
+
 // createICMPEchoPacket 创建ICMP Echo请求包
 func createICMPEchoPacket(id, seq uint16) []byte {
 	// ICMP Echo Request:
@@ -468,99 +528,6 @@ func createICMPEchoPacket(id, seq uint16) []byte {
 	return packet
 }
 
-// sendWithIcmpOnly 纯icmp包模式（回退方案）
-func sendWithIcmpOnly(target string, config ICMPConfig) (bool, int, error) {
-	c, err := icmp.ListenPacket("ip4:icmp", "0.0.0.0")
-	if err != nil {
-		return false, 0, err
-	}
-	defer c.Close()
-
-	// Prepare ICMP message
-	wm := icmp.Message{
-		Type: ipv4.ICMPTypeEcho, Code: 0,
-		Body: &icmp.Echo{
-			ID:   os.Getpid() & 0xffff,
-			Seq:  1,
-			Data: []byte("HELLO-R-U-THERE"),
-		},
-	}
-	wb, err := wm.Marshal(nil)
-	if err != nil {
-		return false, 0, err
-	}
-
-	for i := 0; i < config.Retries; i++ {
-		if _, err := c.WriteTo(wb, &net.IPAddr{IP: net.ParseIP(target)}); err != nil {
-			if config.Logger != nil {
-				config.Logger.Logf("发送ICMP请求失败: %v", err)
-			}
-			continue
-		}
-
-		if err := c.SetReadDeadline(time.Now().Add(config.Timeout)); err != nil {
-			return false, 0, err
-		}
-
-		rb := make([]byte, 1500)
-		n, peer, err := c.ReadFrom(rb)
-		if err != nil {
-			if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-				if config.Logger != nil {
-					config.Logger.Logf("接收ICMP响应超时: %v", target)
-				}
-				continue
-			}
-			if config.Logger != nil {
-				config.Logger.Logf("接收ICMP响应失败: %v", err)
-			}
-			continue
-		}
-
-		// 检查是否来自目标
-		var peerIP string
-		if peer != nil {
-			if ipAddr, ok := peer.(*net.IPAddr); ok {
-				peerIP = ipAddr.IP.String()
-			}
-		}
-		if peerIP != "" && peerIP != target {
-			continue
-		}
-
-		// 解析ICMP消息
-		rm, err := icmp.ParseMessage(1, rb[:n])
-		if err != nil {
-			if config.Logger != nil {
-				config.Logger.Logf("解析ICMP消息失败: %v", err)
-			}
-			continue
-		}
-
-		// 检查是否是Echo Reply
-		switch rm.Type {
-		case ipv4.ICMPTypeEchoReply:
-			if config.Logger != nil {
-				config.Logger.Logf("收到来自 %s 的Echo Reply", target)
-			}
-			// 对于纯icmp包模式，返回默认TTL值
-			ttl := getDefaultTTL(target)
-			return true, ttl, nil
-		case ipv4.ICMPTypeDestinationUnreachable:
-			if config.Logger != nil {
-				config.Logger.Logf("目标 %s 不可达", target)
-			}
-			return false, 0, nil
-		default:
-			if config.Logger != nil {
-				config.Logger.Logf("收到来自 %s 的未知ICMP类型: %v", target, rm.Type)
-			}
-		}
-	}
-
-	return false, 0, nil
-}
-
 // calculateChecksum 计算ICMP校验和
 func calculateChecksum(data []byte) uint16 {
 	var sum uint32
@@ -579,68 +546,27 @@ func calculateChecksum(data []byte) uint16 {
 	return uint16(^sum)
 }
 
-// checkAdminPrivileges 检查管理员权限
-func checkAdminPrivileges() bool {
-	if runtime.GOOS != "windows" {
-		return true
-	}
-
-	// 尝试打开需要管理员权限的设备
-	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
-	return err == nil
-}
-
-// getDefaultTTL 根据目标IP返回合理的默认TTL值
-func getDefaultTTL(target string) int {
-	ip := net.ParseIP(target)
-	if ip == nil {
-		return 64 // 默认值
-	}
-
-	// 判断���否为本地网络
-	if isLocalNetwork(target) {
-		// 本地网络：Windows系统通常返回128，Linux系统返回64
-		return 128 // 假设本地网络使用Windows系统
-	} else {
-		// 远程网络：TTL会递减，通常为64-128之间的值
-		return 64 // 假设远程网络使用Linux系统
-	}
-}
-
-// isLocalNetwork 判断目标是否为本地网络
-func isLocalNetwork(target string) bool {
-	ip := net.ParseIP(target)
-	if ip == nil {
-		return false
-	}
-
-	// 检查是否为私有IP地址范围
-	privateRanges := []string{
-		"10.0.0.0/8",
-		"172.16.0.0/12",
-		"192.168.0.0/16",
-		"127.0.0.0/8",
-	}
-	for _, cidr := range privateRanges {
-		_, network, err := net.ParseCIDR(cidr)
-		if err == nil && network.Contains(ip) {
-			return true
-		}
-	}
-
-	return false
-}
+// ========== ICMPScanner结构体方法 ==========
 
 // NewICMPScanner creates a new ICMPScanner
-
-// 修改：初始化函数，添加延迟配置参数
 func NewICMPScanner(targets []string, logger *controller.Logger) *ICMPScanner {
 	return &ICMPScanner{
-		targets:    targets,
-		logger:     logger,
+		targets: targets,
+		logger:  logger,
+		config: ICMPConfig{
+			Timeout: 3 * time.Second,
+			Retries: 2,
+			Logger:  logger,
+		},
 		delayType:  controller.ConstantDelay, // 默认延迟类型
 		delayValue: 100,                      // 默认延迟值
 	}
+}
+
+// SetConfig 设置ICMP配置参数
+func (s *ICMPScanner) SetConfig(timeout time.Duration, retries int) {
+	s.config.Timeout = timeout
+	s.config.Retries = retries
 }
 
 // 新增：设置延迟配置
@@ -649,20 +575,65 @@ func (s *ICMPScanner) SetDelayConfig(delayType controller.DelayType, delayValue 
 	s.delayValue = delayValue
 }
 
-// SendAndReceive 发送ICMP请求并接收响应（ICMPScanner版本）
-func (s *ICMPScanner) SendAndReceive(target string) (bool, int, error) {
-	config := ICMPConfig{
-		Timeout: 3 * time.Second,
-		Retries: 1,
-		Logger:  s.logger,
-	}
-	return SendEchoRequest(target, config)
+// SetProgressCallback 设置进度回调函数
+func (s *ICMPScanner) SetProgressCallback(callback func(current, total int)) {
+	s.progressCallback = callback
 }
 
-// 修改：scanWithWindowsAPI函数，添加超时保护和错误恢复（使用 context + WaitGroup）
-func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
+// parseTargets 解析目标列表（使用包级函数）
+func (s *ICMPScanner) parseTargets() []string {
+	var targetsToScan []string
+	for _, target := range s.targets {
+		if strings.Contains(target, "-") {
+			// 尝试解析IP范围
+			if ips, err := ParseIPRange(target); err == nil {
+				targetsToScan = append(targetsToScan, ips...)
+			} else {
+				s.logger.Logf("无法解析IP范围 %s: %v", target, err)
+			}
+		} else {
+			// 单个IP地址
+			targetsToScan = append(targetsToScan, target)
+		}
+	}
+	return targetsToScan
+}
+
+// Scan 探测主机存活性（统一处理ICMP→TCP降级）
+func (s *ICMPScanner) Scan() (interface{}, error) {
+	targetsToScan := s.parseTargets()
+	s.logger.Log("主机存活性扫描开始，目标列表: " + fmt.Sprintf("%v", targetsToScan))
+
+	// 通知初始进度
+	if s.progressCallback != nil {
+		s.progressCallback(0, len(targetsToScan))
+	}
+
+	// 检查管理员权限，决定使用ICMP还是TCP扫描
+	var aliveHosts []HostInfo
+	var scanMethod string
+
+	if CheckAdminPrivileges() {
+		s.logger.Log("具有管理员权限，尝试使用ICMP扫描")
+		aliveHosts = s.scanWithICMP(targetsToScan)
+		scanMethod = ScanMethodICMP
+	} else {
+		s.logger.Log("无管理员权限，使用TCP扫描")
+		aliveHosts = s.scanWithTCP(targetsToScan)
+		scanMethod = ScanMethodTCP
+	}
+
+	s.logger.Logf("%s完成，发现%d个在线主机", scanMethod, len(aliveHosts))
+	return ScanResult{
+		Hosts:      aliveHosts,
+		ScanMethod: scanMethod,
+	}, nil
+}
+
+// scanWithICMP 使用ICMP进行主机存活性扫描（专注并发和延迟控制）
+func (s *ICMPScanner) scanWithICMP(targets []string) []HostInfo {
 	const maxWorkers = 5
-	const globalTimeout = 30 * time.Second // 全局超时时间
+	const globalTimeout = 30 * time.Second
 
 	totalTargets := len(targets)
 	jobs := make(chan string, totalTargets)
@@ -675,21 +646,19 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 
 	var wg sync.WaitGroup
 
-	// worker 函数，遵循 ctx 取消信号并保证为处理的任务尽可能发送结果
+	// worker 函数，专注并发和延迟控制
 	worker := func(id int) {
 		defer wg.Done()
 		step := 0
 		for {
 			select {
 			case <-ctx.Done():
-				// 取消，直接返回，不再处理新任务
 				return
 			case target, ok := <-jobs:
 				if !ok {
-					// jobs 关闭，退出
 					return
 				}
-				// 在每个任务前添加延迟
+				// 延迟控制
 				delay := controller.GetDelay(s.delayType, s.delayValue, step)
 				if delay > 0 {
 					s.logger.Logf("ICMP Worker %d: 步骤=%d, 延迟类型=%s, 基础值=%dms, 实际延迟=%v, 目标=%s",
@@ -697,23 +666,15 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 					time.Sleep(delay)
 				}
 
-				config := ICMPConfig{
-					Timeout: 2 * time.Second,
-					Retries: 2,
-					Logger:  s.logger,
-				}
-				alive, ttl, err := SendEchoRequest(target, config)
+				// 调用独立函数进行ICMP扫描
+				alive, ttl, err := SendEchoRequest(target, s.config)
 				if err != nil {
 					s.logger.Logf("ICMP扫描失败 %s: %v", target, err)
+					ttl = -1
 				}
 				if alive {
-					results <- HostInfo{
-						Host:  target,
-						Alive: true,
-						TTL:   ttl,
-					}
+					results <- HostInfo{Host: target, Alive: true, TTL: ttl}
 				} else {
-					// 发送空结果以保证主循环的进度统计（结果通道已缓冲 totalTargets）
 					results <- HostInfo{}
 				}
 				step++
@@ -741,7 +702,7 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 		close(results)
 	}()
 
-	// 收集结果并处理超时（使用 timer）
+	// 收集结果并处理超时
 	completed := 0
 	timer := time.NewTimer(globalTimeout)
 	defer func() {
@@ -755,7 +716,6 @@ collectLoop:
 		select {
 		case result, ok := <-results:
 			if !ok {
-				// 所有 worker 已完成并关闭 results
 				break collectLoop
 			}
 			if result.Alive {
@@ -765,14 +725,11 @@ collectLoop:
 			if s.progressCallback != nil {
 				s.progressCallback(completed, totalTargets)
 			}
-			// 如果已处理完所有目标，可以提前结束
 			if completed >= totalTargets {
 				break collectLoop
 			}
 		case <-timer.C:
-			// 超时：记录并取消所有 worker，随后继续从 results 中读取剩余已发送的结果直到 results 被关闭
 			s.logger.Logf("ICMP扫描超时，已完成 %d/%d 个目标", completed, totalTargets)
-			// 计算并更新进度为完成（强制）
 			remaining := totalTargets - completed
 			for j := 0; j < remaining; j++ {
 				completed++
@@ -780,216 +737,47 @@ collectLoop:
 					s.progressCallback(completed, totalTargets)
 				}
 			}
-			// 取消 worker，等待 goroutine 释放并关闭 results（由上方 goroutine 负责）
 			cancel()
-			// 继续循环以便读取 results 直到关闭
 		}
 	}
 
-	s.logger.Logf("ICMP扫描完成，发现%d个在线主机", len(aliveHosts))
 	return aliveHosts
 }
 
-// 修改：scanWithTCPEnhanced函数，添加延迟控制
+// scanWithTCP 使用TCP进行主机存活性扫描（降级方案）
+func (s *ICMPScanner) scanWithTCP(targets []string) []HostInfo {
+	// 使用常见的TCP端口
+	commonPorts := []int{80, 443, 22, 3389, 21, 23, 25, 53, 110, 143, 445, 3306, 8080}
 
-// 添加设置当前扫描方法的方法
-// 在SetProgressCallback方法后添加SetCurrentScanMethod和GetCurrentScanMethod方法
-func (s *ICMPScanner) SetCurrentScanMethod(method string) {
-	s.currentScanMethod = method
-}
+	// 创建PortScanner实例并设置延迟配置
+	portScanner := NewPortScanner(targets, commonPorts, s.logger, s.config.Timeout)
+	portScanner.SetDelayConfig(s.delayType, s.delayValue)
 
-func (s *ICMPScanner) GetCurrentScanMethod() string {
-	if s.currentScanMethod == "" {
-		return ScanMethodICMP // 默认值
-	}
-	return s.currentScanMethod
-}
-
-// scanWithTCPEnhanced TCP增强扫描函数，用于非管理员权限或ICMP扫描失败时的回退方案
-func (s *ICMPScanner) scanWithTCPEnhanced(targets []string) []HostInfo {
-	// 更新扫描方法为TCP扫描
-	s.SetCurrentScanMethod(ScanMethodTCP)
-
-	ports := []string{"80", "443", "22", "3389", "21", "23", "25", "53", "110", "143", "445", "3306", "8080"}
-	const maxWorkers = 20
-
-	type scanJob struct {
-		target string
-		port   string
-	}
-
-	type scanResult struct {
-		target string
-		alive  bool
-	}
-
-	totalJobs := len(targets) * len(ports)
-	completedJobs := 0
-
-	jobs := make(chan scanJob, totalJobs)
-	results := make(chan scanResult, totalJobs)
-	aliveMap := make(map[string]bool)
-
-	// 修改：添加延迟控制的worker函数
-	worker := func(id int, jobs <-chan scanJob, results chan<- scanResult) {
-		step := 0
-		for job := range jobs {
-			// 在每个任务前添加延迟
-			delay := controller.GetDelay(s.delayType, s.delayValue, step)
-			if delay > 0 {
-				s.logger.Logf("TCP Worker %d: 延迟 %v 后扫描 %s:%s", id, delay, job.target, job.port)
-				time.Sleep(delay)
-			}
-
-			conn, err := net.DialTimeout("tcp", net.JoinHostPort(job.target, job.port), 5*time.Second)
-			alive := err == nil
-			if alive {
-				conn.Close()
-			}
-			results <- scanResult{target: job.target, alive: alive}
-			step++
-		}
-	}
-
-	// 启动worker
-	for w := 0; w < maxWorkers; w++ {
-		go worker(w, jobs, results)
-	}
-
-	// 分发任务
-	go func() {
-		for _, target := range targets {
-			for _, port := range ports {
-				jobs <- scanJob{target: target, port: port}
-			}
-		}
-		close(jobs)
-	}()
-
-	// 收集结果
-	for i := 0; i < totalJobs; i++ {
-		result := <-results
-		if result.alive {
-			aliveMap[result.target] = true
-		}
-
-		// 更新进度
-		completedJobs++
-		// 修改进度回调，使用当前扫描方法
-		if s.progressCallback != nil {
-			// 计算已扫描的目标数
-			// 每个目标有len(ports)个端口，所以当扫描完一个目标的所有端口时，completedJobs会增加len(ports)
-			// 我们需要计算已扫描的目标数：completedJobs / len(ports)
-			portsPerTarget := len(ports)
-			scannedTargets := completedJobs / portsPerTarget
-			if scannedTargets > len(targets) {
-				scannedTargets = len(targets)
-			}
-			s.progressCallback(scannedTargets, len(targets))
-		}
-	}
-	close(results)
-
-	// 转换为HostInfo切片，为TCP扫描的主机设置默认TTL值
-	var aliveHosts []HostInfo
-	for target := range aliveMap {
-		aliveHosts = append(aliveHosts, HostInfo{
-			Host:  target,
-			Alive: true,
-			TTL:   0, // TCP扫描无法获取TTL，设为0
-		})
-	}
-
-	s.logger.Logf("TCP存活性扫描完成，发现%d个在线主机", len(aliveHosts))
-	return aliveHosts
-}
-
-// SetProgressCallback 设置进度回调函数
-func (s *ICMPScanner) SetProgressCallback(callback func(current, total int)) {
-	s.progressCallback = callback
-}
-
-// parseIPRange 解析IP范围格式如"192.168.1.1-254"
-func parseIPRange(ipRange string) ([]string, error) {
-	parts := strings.Split(ipRange, "-")
-	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid IP range format")
-	}
-
-	baseIP := parts[0]
-	lastOctetRange := parts[1]
-
-	ipParts := strings.Split(baseIP, ".")
-	if len(ipParts) != 4 {
-		return nil, fmt.Errorf("invalid IP address")
-	}
-
-	start, err := strconv.Atoi(ipParts[3])
-	if err != nil {
-		return nil, fmt.Errorf("invalid last octet")
-	}
-
-	end, err := strconv.Atoi(lastOctetRange)
-	if err != nil {
-		return nil, fmt.Errorf("invalid range end")
-	}
-
-	var ips []string
-	for i := start; i <= end; i++ {
-		ips = append(ips, fmt.Sprintf("%s.%s.%s.%d", ipParts[0], ipParts[1], ipParts[2], i))
-	}
-	return ips, nil
-}
-
-// Scan 探测主机存活性（ICMP Echo请求或TCP连接检查）
-func (s *ICMPScanner) Scan() (interface{}, error) {
-	targetsToScan := s.parseTargets()
-	s.logger.Log("主机存活性扫描开始，目标列表: " + fmt.Sprintf("%v", targetsToScan))
-
-	// 通知初始进度
+	// 设置进度回调
 	if s.progressCallback != nil {
-		s.progressCallback(0, len(targetsToScan))
+		portScanner.SetProgressCallback(s.progressCallback)
 	}
 
-	// 检查管理员权限，但即使有权限也先尝试Windows原始套接字
-	if s.ensureAdminPrivileges() {
-		// 使用Windows API进行ICMP扫描
-		s.logger.Log("具有管理员权限，尝试使用Windows原始套接字API进行ICMP扫描")
-
-		aliveHosts := s.scanWithWindowsAPI(targetsToScan)
-		if len(aliveHosts) > 0 || len(targetsToScan) == 0 {
-			s.logger.Logf("Windows原始套接字API扫描完成，发现%d个在线主机", len(aliveHosts))
-			return ScanResult{
-				Hosts:      aliveHosts,
-				ScanMethod: ScanMethodICMP,
-			}, nil
-		} else {
-			s.logger.Log("Windows原始套接字扫描失败或未发现主机，回退到TCP扫描")
-		}
+	// 执行端口扫描
+	result, err := portScanner.Scan()
+	if err != nil {
+		s.logger.Logf("TCP扫描失败: %v", err)
+		return []HostInfo{}
 	}
 
-	s.logger.Log("使用TCP扫描进行主机存活性检测")
-	tcpHosts := s.scanWithTCPEnhanced(targetsToScan)
-	return ScanResult{
-		Hosts:      tcpHosts,
-		ScanMethod: ScanMethodTCP,
-	}, nil
-}
-
-// parseTargets 解析目标IP范围
-func (s *ICMPScanner) parseTargets() []string {
-	var targetsToScan []string
-	for _, target := range s.targets {
-		if strings.Contains(target, "-") {
-			ips, err := parseIPRange(target)
-			if err != nil {
-				s.logger.Errorf("解析IP范围%s失败: %v", target, err)
-				continue
+	// 转换结果格式
+	var aliveHosts []HostInfo
+	if openPorts, ok := result.(map[string][]int); ok {
+		for target, ports := range openPorts {
+			if len(ports) > 0 {
+				aliveHosts = append(aliveHosts, HostInfo{
+					Host:  target,
+					Alive: true,
+					TTL:   -1, // TCP扫描无法获取TTL
+				})
 			}
-			targetsToScan = append(targetsToScan, ips...)
-		} else {
-			targetsToScan = append(targetsToScan, target)
 		}
 	}
-	return targetsToScan
+
+	return aliveHosts
 }
