@@ -236,7 +236,7 @@ func (s *WindowsRawSocket) SendICMPEcho(targetIP net.IP, id, seq uint16) error {
 	return nil
 }
 
-// ReceiveICMPResponse 接收ICMP响应
+// ReceiveICMPResponse 接收ICMP响应（已做安全长度检查，避免 slice 越界 panic）
 func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 	buf := make([]byte, 1500)
 	var from SockaddrIn
@@ -251,6 +251,7 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 		uintptr(unsafe.Pointer(&fromLen)),
 	)
 
+	// 检查返回错误（-1 -> SOCKET_ERROR）或 err
 	if int(ret) == -1 {
 		// 检查是否为超时
 		if errno, ok := err.(syscall.Errno); ok {
@@ -262,10 +263,16 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 		return nil, nil, fmt.Errorf("接收失败: %v", err)
 	}
 
+	// 安全地将 ret 转为 int 并做边界检查，防止 uintptr 表现为大值导致切片越界
+	r := int(ret)
+	if r <= 0 || r > len(buf) {
+		return nil, nil, fmt.Errorf("接收到非法长度: %d", r)
+	}
+
 	// 提取源IP地址
 	srcIP := net.IPv4(from.SinAddr[0], from.SinAddr[1], from.SinAddr[2], from.SinAddr[3])
 
-	return buf[:ret], srcIP, nil
+	return buf[:r], srcIP, nil
 }
 
 // 简化的提权检查，使用与main.go相同的逻辑
