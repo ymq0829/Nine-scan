@@ -174,7 +174,6 @@ func runInteractiveMode() {
 			fmt.Printf("使用默认参数: 目标=%v, 端口=%v, 延迟=%s\n",
 				quickScanParams.Targets, quickScanParams.Ports, quickScanParams.DelayType)
 			performScan(quickScanParams, ui)
-
 		case 2: // 自定义扫描
 			ui.ClearScreen()
 			ui.ShowWelcome()
@@ -264,13 +263,18 @@ func runCommandLineMode() {
 
 	// 5. 使用调度器执行扫描任务
 	fmt.Println("开始ICMP扫描...")
+
+	// 修复命令行模式下的进度回调（第270行附近）
 	hosts := scheduler.Schedule(func() interface{} {
 		icmpScanner.SetProgressCallback(func(current, total int) {
+			// 使用公共方法获取当前扫描方法
+			scanMethod := icmpScanner.GetCurrentScanMethod()
+
 			progress := (float64(current) / float64(total)) * 100
 			if progress > 100 {
 				progress = 100
 			}
-			fmt.Printf("\rICMP扫描进度: %.1f%% (%d/%d)", progress, current, total)
+			fmt.Printf("\r%s进度: %.1f%% (%d/%d)", scanMethod, progress, current, total)
 		})
 		result, _ := icmpScanner.Scan()
 		return result
@@ -279,13 +283,16 @@ func runCommandLineMode() {
 	// 处理扫描结果，获取包含TTL值的HostInfo
 	var aliveHosts []scanner.HostInfo
 	var aliveHostStrings []string
-	if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
-		aliveHosts = hostInfos
+	var scanMethod string = scanner.ScanMethodICMP // 默认使用ICMP扫描
+
+	if scanResult, ok := hosts.(scanner.ScanResult); ok {
+		aliveHosts = scanResult.Hosts
+		scanMethod = scanResult.ScanMethod
 		// 转换为字符串切片
 		for _, hostInfo := range aliveHosts {
 			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
 		}
-		fmt.Printf("\nICMP扫描完成，发现 %d 个存活主机\n", len(aliveHosts))
+		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 
 		// 打印TTL信息用于调试
 		for _, hostInfo := range aliveHosts {
@@ -293,8 +300,16 @@ func runCommandLineMode() {
 				fmt.Printf("主机 %s TTL: %d\n", hostInfo.Host, hostInfo.TTL)
 			}
 		}
+	} else if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
+		// 兼容旧版本（返回[]HostInfo的情况）
+		aliveHosts = hostInfos
+		// 转换为字符串切片
+		for _, hostInfo := range aliveHosts {
+			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
+		}
+		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 	} else {
-		// 兼容旧版本
+		// 兼容旧版本（返回[]string的情况）
 		if strHosts, ok := hosts.([]string); ok {
 			for _, host := range strHosts {
 				aliveHosts = append(aliveHosts, scanner.HostInfo{
@@ -305,7 +320,7 @@ func runCommandLineMode() {
 				aliveHostStrings = append(aliveHostStrings, host)
 			}
 		}
-		fmt.Printf("\nICMP扫描完成，发现 %d 个存活主机（使用兼容模式）\n", len(aliveHosts))
+		fmt.Printf("\n%s完成，发现 %d 个存活主机（使用兼容模式）\n", scanMethod, len(aliveHosts))
 	}
 
 	// 2. 端口扫描
@@ -439,7 +454,15 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 
 	// 1. 主机存活性探测（使用调度器）
 	ui.ShowScanProgress("ICMP扫描", 0, len(params.Targets))
+	// 修复交互模式下的进度回调（第463行附近）
 	hosts := scheduler.Schedule(func() interface{} {
+		// 设置进度回调，动态获取扫描方法
+		icmpScanner.SetProgressCallback(func(current, total int) {
+			// 使用公共方法获取当前扫描方法
+			scanMethod := icmpScanner.GetCurrentScanMethod()
+			ui.ShowScanProgress(scanMethod, current, total)
+		})
+
 		result, err := icmpScanner.Scan()
 		if err != nil {
 			logger.Log(fmt.Sprintf("ICMP扫描失败: %v", err))
@@ -450,16 +473,26 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 
 	// 处理扫描结果
 	var aliveHosts []scanner.HostInfo
-	if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
+	var scanMethod string = scanner.ScanMethodICMP // 默认使用ICMP扫描
+
+	if scanResult, ok := hosts.(scanner.ScanResult); ok {
+		aliveHosts = scanResult.Hosts
+		scanMethod = scanResult.ScanMethod
+		// 转换为字符串切片
+		for _, hostInfo := range aliveHosts {
+			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
+		}
+		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
+	} else if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
+		// 兼容旧版本（返回[]HostInfo的情况）
 		aliveHosts = hostInfos
 		// 转换为字符串切片
 		for _, hostInfo := range aliveHosts {
 			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
 		}
-		ui.ShowScanProgress("ICMP扫描", len(aliveHosts), len(params.Targets))
-		fmt.Printf("\nICMP扫描完成，发现 %d 个存活主机\n", len(aliveHosts))
+		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 	} else {
-		// 兼容旧版本
+		// 兼容旧版本（返回[]string的情况）
 		if strHosts, ok := hosts.([]string); ok {
 			for _, host := range strHosts {
 				aliveHosts = append(aliveHosts, scanner.HostInfo{
@@ -470,8 +503,7 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 				aliveHostStrings = append(aliveHostStrings, host)
 			}
 		}
-		ui.ShowScanProgress("ICMP扫描", len(aliveHosts), len(params.Targets))
-		fmt.Printf("\nICMP扫描完成，发现 %d 个存活主机（使用兼容模式）\n", len(aliveHosts))
+		fmt.Printf("\n%s完成，发现 %d 个存活主机（使用兼容模式）\n", scanMethod, len(aliveHosts))
 	}
 
 	if len(aliveHosts) == 0 {

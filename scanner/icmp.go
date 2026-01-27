@@ -4,6 +4,7 @@
 package scanner
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
 	"net"
@@ -11,6 +12,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unsafe"
 
@@ -23,36 +25,11 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// ICMPConfig holds configuration for ICMP operations
-type ICMPConfig struct {
-	Timeout time.Duration
-	Retries int
-	Logger  *controller.Logger
-}
-
-// HostInfo 主机信息结构体，包含存活状态和TTL值
-type HostInfo struct {
-	Host  string
-	Alive bool
-	TTL   int
-}
-
-// 在ICMPScanner结构体中添加延迟控制字段
-type ICMPScanner struct {
-	targets          []string
-	logger           *controller.Logger
-	progressCallback func(current, total int)
-	delayType        controller.DelayType // 新增：延迟类型
-	delayValue       int                  // 新增：延迟基础值
-}
-
-// 准备接收地址结构
-type SockaddrIn struct {
-	SinFamily uint16
-	SinPort   uint16
-	SinAddr   [4]byte
-	SinZero   [8]byte
-}
+// 扫描方法常量
+const (
+	ScanMethodICMP = "ICMP扫描"
+	ScanMethodTCP  = "TCP扫描"
+)
 
 // Windows Socket常量
 const (
@@ -83,10 +60,50 @@ const (
 	SOCKADDR_INET4_SIZE = 16 // sizeof(struct sockaddr_in)
 )
 
+// 结构体定义
+
+// ICMPConfig holds configuration for ICMP operations
+type ICMPConfig struct {
+	Timeout time.Duration
+	Retries int
+	Logger  *controller.Logger
+}
+
+// HostInfo 主机信息结构体，包含存活状态和TTL值
+type HostInfo struct {
+	Host  string
+	Alive bool
+	TTL   int
+}
+
+// ICMPScanner ICMP扫描器结构体
+type ICMPScanner struct {
+	targets           []string
+	logger            *controller.Logger
+	progressCallback  func(current, total int)
+	delayType         controller.DelayType // 延迟类型
+	delayValue        int                  // 延迟基础值
+	currentScanMethod string               // 当前扫描方法
+}
+
+// 准备接收地址结构
+type SockaddrIn struct {
+	SinFamily uint16
+	SinPort   uint16
+	SinAddr   [4]byte
+	SinZero   [8]byte
+}
+
 // Windows原始套接字包装器
 type WindowsRawSocket struct {
 	fd      windows.Handle
 	timeout time.Duration
+}
+
+// ScanResult 扫描结果结构体
+type ScanResult struct {
+	Hosts      []HostInfo
+	ScanMethod string
 }
 
 // 加载Windows Socket库
@@ -153,14 +170,15 @@ func CreateWindowsRawSocket() (*WindowsRawSocket, error) {
 		return nil, fmt.Errorf("WSASocketW失败: %v", err)
 	}
 
-	// 测试套接字是否可用
+	// 使用同一个实例进行设置并返回（修复：不要返回一个新的未初始化实例）
 	sock := &WindowsRawSocket{fd: windows.Handle(ret)}
 	if err := sock.SetTimeout(100 * time.Millisecond); err != nil {
+		// 关闭套接字并清理
 		sock.Close()
 		return nil, fmt.Errorf("套接字设置超时失败: %v", err)
 	}
 
-	return &WindowsRawSocket{fd: windows.Handle(ret)}, nil
+	return sock, nil
 }
 
 // Close 关闭套接字
@@ -243,6 +261,7 @@ func (s *WindowsRawSocket) SendICMPEcho(targetIP net.IP, id, seq uint16) error {
 		uintptr(unsafe.Sizeof(addr)),
 	)
 
+	// 发送失败通常会有非零 err 或者返回 SOCKET_ERROR (-1)
 	if int(ret) == -1 {
 		return fmt.Errorf("发送失败: %v", err)
 	}
@@ -264,7 +283,7 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 		uintptr(unsafe.Pointer(&fromLen)),
 	)
 
-	// 修复：更精确的错误检测
+	// 更精确的错误检测（保留对 Errno 的判断）
 	if int32(ret) == -1 { // SOCKET_ERROR
 		if errno, ok := err.(syscall.Errno); ok {
 			switch errno {
@@ -279,7 +298,7 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 		return nil, nil, fmt.Errorf("接收失败: SOCKET_ERROR")
 	}
 
-	// 修复：正确处理返回值
+	// 正确处理返回值
 	if ret == 0 {
 		return nil, nil, fmt.Errorf("连接关闭")
 	}
@@ -578,7 +597,7 @@ func getDefaultTTL(target string) int {
 		return 64 // 默认值
 	}
 
-	// 判断是否为本地网络
+	// 判断���否为本地网络
 	if isLocalNetwork(target) {
 		// 本地网络：Windows系统通常返回128，Linux系统返回64
 		return 128 // 假设本地网络使用Windows系统
@@ -612,16 +631,6 @@ func isLocalNetwork(target string) bool {
 	return false
 }
 
-// SendAndReceive 发送ICMP请求并接收响应（ICMPScanner版本）
-func (s *ICMPScanner) SendAndReceive(target string) (bool, int, error) {
-	config := ICMPConfig{
-		Timeout: 3 * time.Second,
-		Retries: 1,
-		Logger:  s.logger,
-	}
-	return SendEchoRequest(target, config)
-}
-
 // NewICMPScanner creates a new ICMPScanner
 
 // 修改：初始化函数，添加延迟配置参数
@@ -640,7 +649,17 @@ func (s *ICMPScanner) SetDelayConfig(delayType controller.DelayType, delayValue 
 	s.delayValue = delayValue
 }
 
-// 修改：scanWithWindowsAPI函数，添加超时保护和错误恢复
+// SendAndReceive 发送ICMP请求并接收响应（ICMPScanner版本）
+func (s *ICMPScanner) SendAndReceive(target string) (bool, int, error) {
+	config := ICMPConfig{
+		Timeout: 3 * time.Second,
+		Retries: 1,
+		Logger:  s.logger,
+	}
+	return SendEchoRequest(target, config)
+}
+
+// 修改：scanWithWindowsAPI函数，添加超时保护和错误恢复（使用 context + WaitGroup）
 func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 	const maxWorkers = 5
 	const globalTimeout = 30 * time.Second // 全局超时时间
@@ -650,51 +669,62 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 	results := make(chan HostInfo, totalTargets)
 	var aliveHosts []HostInfo
 
-	// 修改worker函数，添加错误处理
-	worker := func(id int, jobs <-chan string, results chan<- HostInfo) {
-		defer func() {
-			if r := recover(); r != nil {
-				s.logger.Logf("ICMP扫描worker发生panic: %v", r)
-				// 即使panic也要确保发送空结果，避免阻塞主循环
-				results <- HostInfo{}
-			}
-		}()
+	// context 用于取消 worker
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
+	var wg sync.WaitGroup
+
+	// worker 函数，遵循 ctx 取消信号并保证为处理的任务尽可能发送结果
+	worker := func(id int) {
+		defer wg.Done()
 		step := 0
-		for target := range jobs {
-			// 在每个任务前添加延迟
-			delay := controller.GetDelay(s.delayType, s.delayValue, step)
-			if delay > 0 {
-				s.logger.Logf("ICMP Worker %d: 步骤=%d, 延迟类型=%s, 基础值=%dms, 实际延迟=%v, 目标=%s",
-					id, step, s.delayType, s.delayValue, delay, target)
-				time.Sleep(delay)
-			}
-
-			config := ICMPConfig{
-				Timeout: 2 * time.Second,
-				Retries: 2,
-				Logger:  s.logger,
-			}
-			alive, ttl, err := SendEchoRequest(target, config)
-			if err != nil {
-				s.logger.Logf("ICMP扫描失败 %s: %v", target, err)
-			}
-			if alive {
-				results <- HostInfo{
-					Host:  target,
-					Alive: true,
-					TTL:   ttl,
+		for {
+			select {
+			case <-ctx.Done():
+				// 取消，直接返回，不再处理新任务
+				return
+			case target, ok := <-jobs:
+				if !ok {
+					// jobs 关闭，退出
+					return
 				}
-			} else {
-				results <- HostInfo{}
+				// 在每个任务前添加延迟
+				delay := controller.GetDelay(s.delayType, s.delayValue, step)
+				if delay > 0 {
+					s.logger.Logf("ICMP Worker %d: 步骤=%d, 延迟类型=%s, 基础值=%dms, 实际延迟=%v, 目标=%s",
+						id, step, s.delayType, s.delayValue, delay, target)
+					time.Sleep(delay)
+				}
+
+				config := ICMPConfig{
+					Timeout: 2 * time.Second,
+					Retries: 2,
+					Logger:  s.logger,
+				}
+				alive, ttl, err := SendEchoRequest(target, config)
+				if err != nil {
+					s.logger.Logf("ICMP扫描失败 %s: %v", target, err)
+				}
+				if alive {
+					results <- HostInfo{
+						Host:  target,
+						Alive: true,
+						TTL:   ttl,
+					}
+				} else {
+					// 发送空结果以保证主循环的进度统计（结果通道已缓冲 totalTargets）
+					results <- HostInfo{}
+				}
+				step++
 			}
-			step++
 		}
 	}
 
-	// 启动worker
+	// 启动 worker
+	wg.Add(maxWorkers)
 	for w := 0; w < maxWorkers; w++ {
-		go worker(w, jobs, results)
+		go worker(w)
 	}
 
 	// 分发任务
@@ -705,13 +735,29 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 		close(jobs)
 	}()
 
-	// 修改：添加超时保护的收集结果逻辑
-	completed := 0
-	timeout := time.After(globalTimeout)
+	// 在 worker 全部退出后关闭 results 通道
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
 
-	for i := 0; i < totalTargets; i++ {
+	// 收集结果并处理超时（使用 timer）
+	completed := 0
+	timer := time.NewTimer(globalTimeout)
+	defer func() {
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}()
+
+collectLoop:
+	for {
 		select {
-		case result := <-results:
+		case result, ok := <-results:
+			if !ok {
+				// 所有 worker 已完成并关闭 results
+				break collectLoop
+			}
 			if result.Alive {
 				aliveHosts = append(aliveHosts, result)
 			}
@@ -719,9 +765,14 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 			if s.progressCallback != nil {
 				s.progressCallback(completed, totalTargets)
 			}
-		case <-timeout:
-			// 超时处理：强制完成剩余任务
+			// 如果已处理完所有目标，可以提前结束
+			if completed >= totalTargets {
+				break collectLoop
+			}
+		case <-timer.C:
+			// 超时：记录并取消所有 worker，随后继续从 results 中读取剩余已发送的结果直到 results 被关闭
 			s.logger.Logf("ICMP扫描超时，已完成 %d/%d 个目标", completed, totalTargets)
+			// 计算并更新进度为完成（强制）
 			remaining := totalTargets - completed
 			for j := 0; j < remaining; j++ {
 				completed++
@@ -729,7 +780,9 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 					s.progressCallback(completed, totalTargets)
 				}
 			}
-			break
+			// 取消 worker，等待 goroutine 释放并关闭 results（由上方 goroutine 负责）
+			cancel()
+			// 继续循环以便读取 results 直到关闭
 		}
 	}
 
@@ -738,7 +791,25 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 }
 
 // 修改：scanWithTCPEnhanced函数，添加延迟控制
+
+// 添加设置当前扫描方法的方法
+// 在SetProgressCallback方法后添加SetCurrentScanMethod和GetCurrentScanMethod方法
+func (s *ICMPScanner) SetCurrentScanMethod(method string) {
+	s.currentScanMethod = method
+}
+
+func (s *ICMPScanner) GetCurrentScanMethod() string {
+	if s.currentScanMethod == "" {
+		return ScanMethodICMP // 默认值
+	}
+	return s.currentScanMethod
+}
+
+// scanWithTCPEnhanced TCP增强扫描函数，用于非管理员权限或ICMP扫描失败时的回退方案
 func (s *ICMPScanner) scanWithTCPEnhanced(targets []string) []HostInfo {
+	// 更新扫描方法为TCP扫描
+	s.SetCurrentScanMethod(ScanMethodTCP)
+
 	ports := []string{"80", "443", "22", "3389", "21", "23", "25", "53", "110", "143", "445", "3306", "8080"}
 	const maxWorkers = 20
 
@@ -804,6 +875,7 @@ func (s *ICMPScanner) scanWithTCPEnhanced(targets []string) []HostInfo {
 
 		// 更新进度
 		completedJobs++
+		// 修改进度回调，使用当前扫描方法
 		if s.progressCallback != nil {
 			// 计算已扫描的目标数
 			// 每个目标有len(ports)个端口，所以当扫描完一个目标的所有端口时，completedJobs会增加len(ports)
@@ -887,14 +959,21 @@ func (s *ICMPScanner) Scan() (interface{}, error) {
 		aliveHosts := s.scanWithWindowsAPI(targetsToScan)
 		if len(aliveHosts) > 0 || len(targetsToScan) == 0 {
 			s.logger.Logf("Windows原始套接字API扫描完成，发现%d个在线主机", len(aliveHosts))
-			return aliveHosts, nil
+			return ScanResult{
+				Hosts:      aliveHosts,
+				ScanMethod: ScanMethodICMP,
+			}, nil
 		} else {
 			s.logger.Log("Windows原始套接字扫描失败或未发现主机，回退到TCP扫描")
 		}
 	}
 
 	s.logger.Log("使用TCP扫描进行主机存活性检测")
-	return s.scanWithTCPEnhanced(targetsToScan), nil
+	tcpHosts := s.scanWithTCPEnhanced(targetsToScan)
+	return ScanResult{
+		Hosts:      tcpHosts,
+		ScanMethod: ScanMethodTCP,
+	}, nil
 }
 
 // parseTargets 解析目标IP范围

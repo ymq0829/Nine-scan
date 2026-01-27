@@ -1,191 +1,23 @@
 ==================== 扫描结果汇总 ====================
-扫描时间: 2026-01-27 10:58:35
-在线主机数量: 31
+扫描时间: 2026-01-27 15:02:05
+在线主机数量: 3
 
 --- 主机详情 ---
 
-主机: 192.168.167.7
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.27
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.23
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.25
-  操作系统: Windows (本地网络猜测)
+主机: 192.168.167.29
+  操作系统: Windows
   开放端口: [25]
   服务信息:
     端口 25: SMTP (Simple Mail Transfer Protocol)
 
 主机: 192.168.167.238
-  操作系统: Windows (本地网络猜测)
+  操作系统: Linux/Unix
   开放端口: [25]
   服务信息:
     端口 25: SMTP (Simple Mail Transfer Protocol)
 
-主机: 192.168.167.15
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.20
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.22
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.4
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.5
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.10
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.11
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.14
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.16
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.18
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.19
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.2
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.12
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.21
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.28
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.30
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.3
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.8
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.9
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.13
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.26
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.29
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.24
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.1
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.17
-  操作系统: Windows (本地网络猜测)
-  开放端口: [25]
-  服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
-
-主机: 192.168.167.6
-  操作系统: Windows (本地网络猜测)
+主机: 192.168.47.128
+  操作系统: Linux/Unix
   开放端口: [25]
   服务信息:
     端口 25: SMTP (Simple Mail Transfer Protocol)
