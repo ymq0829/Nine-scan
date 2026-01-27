@@ -73,6 +73,9 @@ const (
 	WSAEINVAL      = 10022
 	WSAETIMEDOUT   = 10060
 	WSAEWOULDBLOCK = 10035
+	WSAECONNRESET  = 10054 // 添加缺失的错误码
+	WSAENETRESET   = 10052 // 添加缺失的错误码
+	WSAENETDOWN    = 10050 // 添加缺失的错误码
 )
 
 // SockaddrInet4结构体尺寸
@@ -136,14 +139,25 @@ func CreateWindowsRawSocket() (*WindowsRawSocket, error) {
 		uintptr(AF_INET),
 		uintptr(SOCK_RAW),
 		uintptr(IPPROTO_ICMP),
-		0,             // lpProtocolInfo
-		0,             // g
-		uintptr(0x01), // dwFlags
+		0,    // lpProtocolInfo
+		0,    // g
+		0x01, // dwFlags: 使用 WSA_FLAG_OVERLAPPED，启用异步I/O
 	)
 
 	if windows.Handle(ret) == windows.InvalidHandle {
 		cleanupWinsock()
+		// 添加详细的错误信息
+		if errno, ok := err.(syscall.Errno); ok {
+			return nil, fmt.Errorf("WSASocketW失败: errno=%d (可能缺少权限或防火墙阻止)", errno)
+		}
 		return nil, fmt.Errorf("WSASocketW失败: %v", err)
+	}
+
+	// 测试套接字是否可用
+	sock := &WindowsRawSocket{fd: windows.Handle(ret)}
+	if err := sock.SetTimeout(100 * time.Millisecond); err != nil {
+		sock.Close()
+		return nil, fmt.Errorf("套接字设置超时失败: %v", err)
 	}
 
 	return &WindowsRawSocket{fd: windows.Handle(ret)}, nil
@@ -236,7 +250,6 @@ func (s *WindowsRawSocket) SendICMPEcho(targetIP net.IP, id, seq uint16) error {
 	return nil
 }
 
-// ReceiveICMPResponse 接收ICMP响应（已做安全长度检查，避免 slice 越界 panic）
 func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 	buf := make([]byte, 1500)
 	var from SockaddrIn
@@ -246,32 +259,41 @@ func (s *WindowsRawSocket) ReceiveICMPResponse() ([]byte, net.IP, error) {
 		uintptr(s.fd),
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(len(buf)),
-		0, // flags
+		0,
 		uintptr(unsafe.Pointer(&from)),
 		uintptr(unsafe.Pointer(&fromLen)),
 	)
 
-	// 检查返回错误（-1 -> SOCKET_ERROR）或 err
-	if int(ret) == -1 {
-		// 检查是否为超时
+	// 修复：更精确的错误检测
+	if int32(ret) == -1 { // SOCKET_ERROR
 		if errno, ok := err.(syscall.Errno); ok {
 			switch errno {
 			case WSAEWOULDBLOCK, WSAETIMEDOUT:
 				return nil, nil, fmt.Errorf("接收超时")
+			case WSAECONNRESET, WSAENETRESET, WSAENETDOWN:
+				return nil, nil, fmt.Errorf("网络错误: %d", errno)
+			default:
+				return nil, nil, fmt.Errorf("接收失败: errno=%d", errno)
 			}
 		}
-		return nil, nil, fmt.Errorf("接收失败: %v", err)
+		return nil, nil, fmt.Errorf("接收失败: SOCKET_ERROR")
 	}
 
-	// 安全地将 ret 转为 int 并做边界检查，防止 uintptr 表现为大值导致切片越界
+	// 修复：正确处理返回值
+	if ret == 0 {
+		return nil, nil, fmt.Errorf("连接关闭")
+	}
+
+	if ret > uintptr(len(buf)) {
+		return nil, nil, fmt.Errorf("接收到非法长度: %d", int(ret))
+	}
+
 	r := int(ret)
-	if r <= 0 || r > len(buf) {
+	if r <= 0 {
 		return nil, nil, fmt.Errorf("接收到非法长度: %d", r)
 	}
 
-	// 提取源IP地址
 	srcIP := net.IPv4(from.SinAddr[0], from.SinAddr[1], from.SinAddr[2], from.SinAddr[3])
-
 	return buf[:r], srcIP, nil
 }
 
@@ -307,12 +329,13 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 			}
 		}
 	}()
+
 	// 检查管理员权限
 	if !checkAdminPrivileges() {
 		if config.Logger != nil {
-			config.Logger.Log("需要管理员权限才能使用原始套接字")
+			config.Logger.Log("需要管理员权限才能使用原始套接字，回退到TCP扫描")
 		}
-		return sendWithIcmpOnly(target, config)
+		return false, 0, fmt.Errorf("权限不足")
 	}
 
 	// 解析目标IP
@@ -329,14 +352,19 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 	sock, err := CreateWindowsRawSocket()
 	if err != nil {
 		if config.Logger != nil {
-			config.Logger.Logf("创建Windows原始套接字失败: %v", err)
+			config.Logger.Logf("创建Windows原始套接字失败: %v，回退到TCP扫描", err)
 		}
-		return sendWithIcmpOnly(target, config)
+		return false, 0, err
 	}
 	defer sock.Close()
 
 	// 设置超时
-	sock.SetTimeout(config.Timeout)
+	if err := sock.SetTimeout(config.Timeout); err != nil {
+		if config.Logger != nil {
+			config.Logger.Logf("设置套接字超时失败: %v，回退到TCP扫描", err)
+		}
+		return false, 0, err
+	}
 
 	// 尝试发送和接收ICMP包
 	id := uint16(os.Getpid() & 0xffff)
@@ -357,12 +385,15 @@ func sendWithWindowsRawSocket(target string, config ICMPConfig) (bool, int, erro
 		// 接收响应
 		response, srcIP, err := sock.ReceiveICMPResponse()
 		if err != nil {
-			if err.Error() == "接收超时" {
+			if strings.Contains(err.Error(), "接收超时") {
 				if config.Logger != nil {
 					config.Logger.Logf("接收超时: %s", target)
 				}
-			} else if config.Logger != nil {
-				config.Logger.Logf("接收失败: %v", err)
+			} else {
+				if config.Logger != nil {
+					config.Logger.Logf("接收失败: %v，回退到TCP扫描", err)
+				}
+				return false, 0, err
 			}
 			continue
 		}
@@ -609,21 +640,22 @@ func (s *ICMPScanner) SetDelayConfig(delayType controller.DelayType, delayValue 
 	s.delayValue = delayValue
 }
 
-// 修改：scanWithWindowsAPI函数，添加延迟控制
-// 修改worker函数，添加更详细的延迟日志
+// 修改：scanWithWindowsAPI函数，添加超时保护和错误恢复
 func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
-	const maxWorkers = 5 // 减少并发数，避免资源竞争
-	totalTargets := len(targets)
+	const maxWorkers = 5
+	const globalTimeout = 30 * time.Second // 全局超时时间
 
+	totalTargets := len(targets)
 	jobs := make(chan string, totalTargets)
 	results := make(chan HostInfo, totalTargets)
 	var aliveHosts []HostInfo
 
-	// 修改：添加延迟控制的worker函数
+	// 修改worker函数，添加错误处理
 	worker := func(id int, jobs <-chan string, results chan<- HostInfo) {
 		defer func() {
 			if r := recover(); r != nil {
 				s.logger.Logf("ICMP扫描worker发生panic: %v", r)
+				// 即使panic也要确保发送空结果，避免阻塞主循环
 				results <- HostInfo{}
 			}
 		}()
@@ -633,7 +665,6 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 			// 在每个任务前添加延迟
 			delay := controller.GetDelay(s.delayType, s.delayValue, step)
 			if delay > 0 {
-				// 改进：显示更详细的延迟信息
 				s.logger.Logf("ICMP Worker %d: 步骤=%d, 延迟类型=%s, 基础值=%dms, 实际延迟=%v, 目标=%s",
 					id, step, s.delayType, s.delayValue, delay, target)
 				time.Sleep(delay)
@@ -644,7 +675,10 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 				Retries: 2,
 				Logger:  s.logger,
 			}
-			alive, ttl, _ := SendEchoRequest(target, config)
+			alive, ttl, err := SendEchoRequest(target, config)
+			if err != nil {
+				s.logger.Logf("ICMP扫描失败 %s: %v", target, err)
+			}
 			if alive {
 				results <- HostInfo{
 					Host:  target,
@@ -671,20 +705,35 @@ func (s *ICMPScanner) scanWithWindowsAPI(targets []string) []HostInfo {
 		close(jobs)
 	}()
 
-	// 收集结果
+	// 修改：添加超时保护的收集结果逻辑
 	completed := 0
-	for i := 0; i < totalTargets; i++ {
-		result := <-results
-		if result.Alive {
-			aliveHosts = append(aliveHosts, result)
-		}
+	timeout := time.After(globalTimeout)
 
-		completed++
-		if s.progressCallback != nil {
-			s.progressCallback(completed, totalTargets)
+	for i := 0; i < totalTargets; i++ {
+		select {
+		case result := <-results:
+			if result.Alive {
+				aliveHosts = append(aliveHosts, result)
+			}
+			completed++
+			if s.progressCallback != nil {
+				s.progressCallback(completed, totalTargets)
+			}
+		case <-timeout:
+			// 超时处理：强制完成剩余任务
+			s.logger.Logf("ICMP扫描超时，已完成 %d/%d 个目标", completed, totalTargets)
+			remaining := totalTargets - completed
+			for j := 0; j < remaining; j++ {
+				completed++
+				if s.progressCallback != nil {
+					s.progressCallback(completed, totalTargets)
+				}
+			}
+			break
 		}
 	}
 
+	s.logger.Logf("ICMP扫描完成，发现%d个在线主机", len(aliveHosts))
 	return aliveHosts
 }
 
@@ -756,8 +805,15 @@ func (s *ICMPScanner) scanWithTCPEnhanced(targets []string) []HostInfo {
 		// 更新进度
 		completedJobs++
 		if s.progressCallback != nil {
-			progress := (completedJobs * len(targets)) / totalJobs
-			s.progressCallback(progress, len(targets))
+			// 计算已扫描的目标数
+			// 每个目标有len(ports)个端口，所以当扫描完一个目标的所有端口时，completedJobs会增加len(ports)
+			// 我们需要计算已扫描的目标数：completedJobs / len(ports)
+			portsPerTarget := len(ports)
+			scannedTargets := completedJobs / portsPerTarget
+			if scannedTargets > len(targets) {
+				scannedTargets = len(targets)
+			}
+			s.progressCallback(scannedTargets, len(targets))
 		}
 	}
 	close(results)
@@ -814,7 +870,6 @@ func parseIPRange(ipRange string) ([]string, error) {
 }
 
 // Scan 探测主机存活性（ICMP Echo请求或TCP连接检查）
-// 返回包含TTL值的HostInfo切片
 func (s *ICMPScanner) Scan() (interface{}, error) {
 	targetsToScan := s.parseTargets()
 	s.logger.Log("主机存活性扫描开始，目标列表: " + fmt.Sprintf("%v", targetsToScan))
@@ -824,17 +879,21 @@ func (s *ICMPScanner) Scan() (interface{}, error) {
 		s.progressCallback(0, len(targetsToScan))
 	}
 
-	// 检查管理员权限
+	// 检查管理员权限，但即使有权限也先尝试Windows原始套接字
 	if s.ensureAdminPrivileges() {
 		// 使用Windows API进行ICMP扫描
-		s.logger.Log("具有管理员权限，使用Windows原始套接字API进行ICMP扫描")
+		s.logger.Log("具有管理员权限，尝试使用Windows原始套接字API进行ICMP扫描")
 
 		aliveHosts := s.scanWithWindowsAPI(targetsToScan)
-		s.logger.Logf("Windows原始套接字API扫描完成，发现%d个在线主机", len(aliveHosts))
-		return aliveHosts, nil
+		if len(aliveHosts) > 0 || len(targetsToScan) == 0 {
+			s.logger.Logf("Windows原始套接字API扫描完成，发现%d个在线主机", len(aliveHosts))
+			return aliveHosts, nil
+		} else {
+			s.logger.Log("Windows原始套接字扫描失败或未发现主机，回退到TCP扫描")
+		}
 	}
 
-	s.logger.Log("没有管理员权限，使用TCP扫描进行主机存活性检测")
+	s.logger.Log("使用TCP扫描进行主机存活性检测")
 	return s.scanWithTCPEnhanced(targetsToScan), nil
 }
 
