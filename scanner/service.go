@@ -131,3 +131,24 @@ func (s *ServiceScanner) EnhancedScan() (map[string]map[int]*ServiceFingerprint,
 	}
 	return result.(map[string]map[int]*ServiceFingerprint), nil
 }
+
+// filterNonASCII 过滤非ASCII字符，解决乱码问题（改进版）
+func filterNonASCII(s string) string {
+	var result strings.Builder
+	for _, r := range s {
+		// 放宽过滤条件，保留更多可读字符
+		if r >= 32 && r <= 126 { // 保留基本ASCII可打印字符
+			result.WriteRune(r)
+		} else if r >= 0x80 && r <= 0x9F { // 过滤Windows-1252控制字符
+			// 跳过这些控制字符，它们通常会导致乱码
+		} else if r >= 0xA0 && r <= 0xFF { // 保留扩展拉丁字符
+			result.WriteRune(r)
+		} else if r == '\n' || r == '\r' || r == '\t' || r == ' ' {
+			result.WriteRune(r) // 保留空白字符
+		} else if r >= 0x4E00 && r <= 0x9FFF { // 保留中文字符
+			result.WriteRune(r)
+		}
+		// 其他特殊字符被过滤掉
+	}
+	return result.String()
+}

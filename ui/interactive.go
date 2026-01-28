@@ -59,80 +59,108 @@ func (ui *InteractiveUI) GetScanParameters() *controller.ScanParams {
 	ports := ui.getPorts()
 
 	// 获取延迟配置
-	delayType, delayVal := ui.getDelayConfig()
+	delayType, delayValue := ui.getDelayConfig()
 
 	// 获取超时时间
 	timeout := ui.getTimeout()
 
-	// 获取SMB/UDP配置
-	enableSMB, enableUDP := ui.getSMBUDPConfig()
+	// 获取UDP扫描配置
+	enableUDP := ui.getUDPConfig()
 
 	return &controller.ScanParams{
 		Targets:    targets,
 		Ports:      ports,
 		DelayType:  delayType,
-		DelayValue: delayVal,
+		DelayValue: delayValue,
 		Timeout:    timeout,
-		EnableSMB:  enableSMB,
 		EnableUDP:  enableUDP,
 	}
 }
 
-// getTargets 获取目标主机列表
-func (ui *InteractiveUI) getTargets() []string {
-	fmt.Print("请输入目标主机 (支持IP、网段、逗号分隔，如 192.168.1.1,192.168.1.1-254): ")
+// getUDPConfig 获取UDP扫描配置
+func (ui *InteractiveUI) getUDPConfig() bool {
+	fmt.Print("是否启用UDP扫描？(y/n，默认y): ")
+	input, _ := ui.reader.ReadString('\n')
+	enableUDP := strings.TrimSpace(strings.ToLower(input)) != "n"
+	return enableUDP
+}
+
+// getTimeout 获取超时时间
+func (ui *InteractiveUI) getTimeout() int {
+	fmt.Print("请输入连接超时时间(秒，默认5秒): ")
 	input, _ := ui.reader.ReadString('\n')
 	input = strings.TrimSpace(input)
 
 	if input == "" {
-		fmt.Println("使用默认目标: 127.0.0.1")
-		return []string{"127.0.0.1"}
+		return 5 // 默认超时时间
+	}
+
+	timeout, err := strconv.Atoi(input)
+	if err != nil || timeout <= 0 {
+		fmt.Println("无效的超时时间，使用默认值5秒")
+		return 5
+	}
+
+	return timeout
+}
+
+// getTargets 获取目标主机列表
+func (ui *InteractiveUI) getTargets() []string {
+	fmt.Print("请输入目标主机（支持IP、域名、CIDR，多个目标用逗号分隔）: ")
+	input, _ := ui.reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+
+	if input == "" {
+		return []string{"127.0.0.1"} // 默认目标
 	}
 
 	targets := strings.Split(input, ",")
+	for i := range targets {
+		targets[i] = strings.TrimSpace(targets[i])
+	}
 	return targets
 }
 
 // getPorts 获取端口列表
 func (ui *InteractiveUI) getPorts() []int {
-	fmt.Print("请输入扫描端口 (支持逗号分隔或范围，如 21-23,80,443,3389): ")
+	fmt.Print("请输入端口范围（如: 80,443 或 1-1000，默认常用端口）: ")
 	input, _ := ui.reader.ReadString('\n')
 	input = strings.TrimSpace(input)
 
 	if input == "" {
-		fmt.Println("使用默认端口: 21-23,80,443,3389,3306,8080")
-		input = "21-23,80,443,3389,3306,8080"
+		// 返回常用端口
+		return []int{21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080}
 	}
 
-	portStrs := strings.Split(input, ",")
 	var ports []int
-
-	for _, ps := range portStrs {
-		ps = strings.TrimSpace(ps)
-
-		if strings.Contains(ps, "-") {
-			rangeParts := strings.Split(ps, "-")
+	// 处理端口范围
+	parts := strings.Split(input, ",")
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if strings.Contains(part, "-") {
+			// 处理端口范围
+			rangeParts := strings.Split(part, "-")
 			if len(rangeParts) == 2 {
-				startPort, _ := strconv.Atoi(strings.TrimSpace(rangeParts[0]))
-				endPort, _ := strconv.Atoi(strings.TrimSpace(rangeParts[1]))
-
-				if startPort >= 1 && startPort <= 65535 && endPort >= 1 && endPort <= 65535 && startPort <= endPort {
-					for port := startPort; port <= endPort; port++ {
+				start, err1 := strconv.Atoi(strings.TrimSpace(rangeParts[0]))
+				end, err2 := strconv.Atoi(strings.TrimSpace(rangeParts[1]))
+				if err1 == nil && err2 == nil && start <= end {
+					for port := start; port <= end; port++ {
 						ports = append(ports, port)
 					}
 				}
 			}
 		} else {
-			port, err := strconv.Atoi(ps)
-			if err == nil && port >= 1 && port <= 65535 {
+			// 处理单个端口
+			port, err := strconv.Atoi(part)
+			if err == nil {
 				ports = append(ports, port)
 			}
 		}
 	}
 
 	if len(ports) == 0 {
-		fmt.Println("端口解析失败，使用默认端口")
-		return []int{21, 22, 23, 80, 443, 3389, 3306, 8080}
+		// 默认端口
+		return []int{21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080}
 	}
 
 	return ports
@@ -140,64 +168,50 @@ func (ui *InteractiveUI) getPorts() []int {
 
 // getDelayConfig 获取延迟配置
 func (ui *InteractiveUI) getDelayConfig() (controller.DelayType, int) {
-	fmt.Println("\n请选择延迟类型:")
+	fmt.Println("\n延迟配置选项:")
 	fmt.Println("1. 固定延迟 (constant)")
 	fmt.Println("2. 随机延迟 (random)")
 	fmt.Println("3. 线性增长 (function1)")
 	fmt.Println("4. 正弦波动 (function2)")
 	fmt.Println("5. 阶梯型 (function3)")
 	fmt.Println("6. 随机步长 (function4)")
-	fmt.Print("请输入选择 (1-6): ")
+	fmt.Print("请选择延迟类型 (1-6，默认1): ")
 
-	choice, err := ui.readInputInt()
-	if err != nil || choice < 1 || choice > 6 {
-		fmt.Println("使用默认延迟: 固定延迟")
-		return controller.ConstantDelay, 100
-	}
-
-	delayTypes := map[int]controller.DelayType{
-		1: controller.ConstantDelay,
-		2: controller.RandomDelay,
-		3: controller.Function1,
-		4: controller.Function2,
-		5: controller.Function3,
-		6: controller.Function4,
-	}
-
-	fmt.Print("请输入延迟基础值 (毫秒，默认100): ")
-	delayVal, err := ui.readInputInt()
-	if err != nil || delayVal <= 0 {
-		delayVal = 100
-	}
-
-	return delayTypes[choice], delayVal
-}
-
-// getTimeout 获取超时时间
-func (ui *InteractiveUI) getTimeout() int {
-	fmt.Print("请输入连接超时时间 (秒，默认5): ")
-	timeout, err := ui.readInputInt()
-	if err != nil || timeout <= 0 {
-		timeout = 5
-	}
-	return timeout
-}
-
-// getSMBUDPConfig 获取SMB/UDP扫描配置
-func (ui *InteractiveUI) getSMBUDPConfig() (bool, bool) {
-	fmt.Println("\n=== 高级扫描选项 ===")
-	fmt.Println("SMB扫描: 检测Windows共享服务（端口445）")
-	fmt.Println("UDP扫描: 检测UDP协议服务（DNS、NTP、SNMP等）")
-
-	fmt.Print("是否启用SMB扫描？(y/n，默认n): ")
 	input, _ := ui.reader.ReadString('\n')
-	enableSMB := strings.TrimSpace(strings.ToLower(input)) == "y"
+	input = strings.TrimSpace(input)
 
-	fmt.Print("是否启用UDP扫描？(y/n，默认n): ")
-	input, _ = ui.reader.ReadString('\n')
-	enableUDP := strings.TrimSpace(strings.ToLower(input)) == "y"
+	var delayType controller.DelayType
+	switch input {
+	case "2":
+		delayType = controller.RandomDelay
+	case "3":
+		delayType = controller.Function1
+	case "4":
+		delayType = controller.Function2
+	case "5":
+		delayType = controller.Function3
+	case "6":
+		delayType = controller.Function4
+	default: // 包括 "1" 和无效输入
+		delayType = controller.ConstantDelay
+	}
 
-	return enableSMB, enableUDP
+	// 获取延迟基础值
+	fmt.Print("请输入延迟基础值(毫秒，默认100): ")
+	delayInput, _ := ui.reader.ReadString('\n')
+	delayInput = strings.TrimSpace(delayInput)
+
+	if delayInput == "" {
+		return delayType, 100 // 默认延迟值
+	}
+
+	delayValue, err := strconv.Atoi(delayInput)
+	if err != nil || delayValue <= 0 {
+		fmt.Println("无效的延迟值，使用默认值100毫秒")
+		return delayType, 100
+	}
+
+	return delayType, delayValue
 }
 
 // ShowScanProgress 显示扫描进度
@@ -224,43 +238,10 @@ func (ui *InteractiveUI) ShowScanProgress(step string, progress int, total int) 
 	os.Stdout.Sync()
 }
 
-// ShowScanResult 显示扫描结果
+// ShowScanResult 显示扫描结果（统一格式）
 func (ui *InteractiveUI) ShowScanResult(result *output.Result) {
-	fmt.Println("\n\n=== 扫描结果 ===")
-	fmt.Println()
-
-	// 显示存活主机
-	if len(result.AliveHosts) > 0 {
-		fmt.Printf("存活主机 (%d 个):\n", len(result.AliveHosts))
-		for i, host := range result.AliveHosts {
-			fmt.Printf("  %d. %s", i+1, host)
-			if osInfo, exists := result.OSInfo[host]; exists && osInfo != "" {
-				fmt.Printf(" - %s", osInfo)
-			}
-			fmt.Println()
-		}
-		fmt.Println()
-	} else {
-		fmt.Println("未发现存活主机")
-		return
-	}
-
-	// 显示开放端口和服务
-	for host, ports := range result.OpenPorts {
-		if len(ports) > 0 {
-			fmt.Printf("主机 %s 的开放端口:\n", host)
-			for _, port := range ports {
-				fmt.Printf("  - 端口 %d", port)
-				if services, exists := result.ServiceInfo[host]; exists {
-					if service, exists := services[port]; exists && service != nil && service.ServiceName != "" {
-						fmt.Printf(" (%s)", service.ServiceName)
-					}
-				}
-				fmt.Println()
-			}
-			fmt.Println()
-		}
-	}
+	// 使用与命令行模式相同的统一格式
+	result.Print()
 }
 
 // AskForContinue 询问是否继续

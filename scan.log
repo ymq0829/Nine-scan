@@ -18606,3 +18606,1528 @@
 [2026-01-27 17:26:02.802] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
 [2026-01-27 17:26:02.802] [INFO] 开始检测主机 192.168.47.128 的操作系统
 [2026-01-27 17:26:02.802] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 08:12:56.695] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 08:12:56.730] [INFO] 用户输入参数: &{[172.17.0.1 192.168.167.19 192.168.167.238 192.168.47.128] [21 22 23 24 25 26 27 28 29 30 8080 80 443 3389] random 100 5 false false}
+[2026-01-28 08:12:56.731] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=103ms
+[2026-01-28 08:12:56.834] [INFO] 主机存活性扫描开始，目标列表: [172.17.0.1 192.168.167.19 192.168.167.238 192.168.47.128]
+[2026-01-28 08:12:56.835] [INFO] 具有管理员权限，尝试使用ICMP扫描
+[2026-01-28 08:12:56.835] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.19
+[2026-01-28 08:12:56.835] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=172.17.0.1
+[2026-01-28 08:12:56.835] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 08:12:56.835] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 08:12:56.937] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 08:12:56.937] [INFO] Windows原始套接字: 发送ICMP到 172.17.0.1 (重试 1)
+[2026-01-28 08:12:56.937] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.19 (重试 1)
+[2026-01-28 08:12:56.937] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 08:12:56.939] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 08:12:56.948] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 08:12:59.711] [INFO] Windows原始套接字: 发送ICMP到 172.17.0.1 (重试 2)
+[2026-01-28 08:12:59.711] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.19 (重试 2)
+[2026-01-28 08:13:02.712] [INFO] ICMP扫描完成，发现2个在线主机
+[2026-01-28 08:13:02.713] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 08:13:02.713] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=99ms
+[2026-01-28 08:13:02.813] [INFO] TCP端口扫描开始，待扫描在线主机: [192.168.47.128 192.168.167.238]
+[2026-01-28 08:13:02.813] [INFO] 待扫描端口列表: [21 22 23 24 25 26 27 28 29 30 8080 80 443 3389]
+[2026-01-28 08:13:02.813] [INFO] 延迟配置: 类型=random, 值=100ms
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 26: 步骤=0, 延迟类型=random, 延迟=134ms, 目标=192.168.167.238:80
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 25: 步骤=0, 延迟类型=random, 延迟=141ms, 目标=192.168.167.238:8080
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 27: 步骤=0, 延迟类型=random, 延迟=129ms, 目标=192.168.167.238:443
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 28: 步骤=0, 延迟类型=random, 延迟=104ms, 目标=192.168.167.238:3389
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 13: 步骤=0, 延迟类型=random, 延迟=71ms, 目标=192.168.47.128:443
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 19: 步骤=0, 延迟类型=random, 延迟=88ms, 目标=192.168.167.238:25
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 20: 步骤=0, 延迟类型=random, 延迟=90ms, 目标=192.168.167.238:26
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 17: 步骤=0, 延迟类型=random, 延迟=58ms, 目标=192.168.167.238:23
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 6: 步骤=0, 延迟类型=random, 延迟=78ms, 目标=192.168.47.128:26
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 18: 步骤=0, 延迟类型=random, 延迟=107ms, 目标=192.168.167.238:24
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 14: 步骤=0, 延迟类型=random, 延迟=127ms, 目标=192.168.47.128:3389
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 1: 步骤=0, 延迟类型=random, 延迟=130ms, 目标=192.168.47.128:21
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 2: 步骤=0, 延迟类型=random, 延迟=92ms, 目标=192.168.47.128:23
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 4: 步骤=0, 延迟类型=random, 延迟=146ms, 目标=192.168.47.128:24
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 3: 步骤=0, 延迟类型=random, 延迟=50ms, 目标=192.168.47.128:22
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 12: 步骤=0, 延迟类型=random, 延迟=147ms, 目标=192.168.47.128:80
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 5: 步骤=0, 延迟类型=random, 延迟=68ms, 目标=192.168.47.128:25
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 22: 步骤=0, 延迟类型=random, 延迟=90ms, 目标=192.168.167.238:28
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 21: 步骤=0, 延迟类型=random, 延迟=61ms, 目标=192.168.167.238:27
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 11: 步骤=0, 延迟类型=random, 延迟=138ms, 目标=192.168.47.128:8080
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 10: 步骤=0, 延迟类型=random, 延迟=112ms, 目标=192.168.47.128:30
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 23: 步骤=0, 延迟类型=random, 延迟=86ms, 目标=192.168.167.238:29
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 24: 步骤=0, 延迟类型=random, 延迟=118ms, 目标=192.168.167.238:30
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 7: 步骤=0, 延迟类型=random, 延迟=88ms, 目标=192.168.47.128:27
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 8: 步骤=0, 延迟类型=random, 延迟=104ms, 目标=192.168.47.128:28
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 15: 步骤=0, 延迟类型=random, 延迟=70ms, 目标=192.168.167.238:21
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 9: 步骤=0, 延迟类型=random, 延迟=87ms, 目标=192.168.47.128:29
+[2026-01-28 08:13:02.813] [INFO] 端口扫描Worker 16: 步骤=0, 延迟类型=random, 延迟=81ms, 目标=192.168.167.238:22
+[2026-01-28 08:13:02.882] [INFO] 192.168.47.128:25 端口开放
+[2026-01-28 08:13:02.901] [INFO] 192.168.167.238:25 端口开放
+[2026-01-28 08:13:04.900] [INFO] 192.168.47.128:22 端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.912] [INFO] 192.168.47.128:443 端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.926] [INFO] 192.168.47.128:29 端口关闭或无法连接: dial tcp 192.168.47.128:29: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.926] [INFO] 192.168.47.128:26 端口关闭或无法连接: dial tcp 192.168.47.128:26: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.930] [INFO] 192.168.167.238:23 端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.930] [INFO] 192.168.167.238:27 端口关闭或无法连接: dial tcp 192.168.167.238:27: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.943] [INFO] 192.168.47.128:23 端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.943] [INFO] 192.168.47.128:27 端口关闭或无法连接: dial tcp 192.168.47.128:27: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.957] [INFO] 192.168.47.128:28 端口关闭或无法连接: dial tcp 192.168.47.128:28: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.957] [INFO] 192.168.47.128:30 端口关闭或无法连接: dial tcp 192.168.47.128:30: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.960] [INFO] 192.168.167.238:21 端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.973] [INFO] 192.168.47.128:21 端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.973] [INFO] 192.168.47.128:3389 端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.977] [INFO] 192.168.167.238:3389 端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.977] [INFO] 192.168.167.238:30 端口关闭或无法连接: dial tcp 192.168.167.238:30: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.977] [INFO] 192.168.167.238:28 端口关闭或无法连接: dial tcp 192.168.167.238:28: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.977] [INFO] 192.168.167.238:29 端口关闭或无法连接: dial tcp 192.168.167.238:29: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.977] [INFO] 192.168.167.238:443 端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.978] [INFO] 192.168.167.238:26 端口关闭或无法连接: dial tcp 192.168.167.238:26: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.978] [INFO] 192.168.167.238:24 端口关闭或无法连接: dial tcp 192.168.167.238:24: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.978] [INFO] 192.168.167.238:22 端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.989] [INFO] 192.168.47.128:80 端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.989] [INFO] 192.168.47.128:8080 端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.989] [INFO] 192.168.47.128:24 端口关闭或无法连接: dial tcp 192.168.47.128:24: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.993] [INFO] 192.168.167.238:80 端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.993] [INFO] 192.168.167.238:8080 端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:13:04.993] [INFO] 端口扫描延迟统计: 总任务数=28, 平均延迟=100ms, 估算总延迟=2.8s
+[2026-01-28 08:13:04.993] [INFO] TCP端口扫描结束
+[2026-01-28 08:13:04.993] [INFO] 任务完成，结果类型: map[string][]int
+[2026-01-28 08:13:04.994] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=72ms
+[2026-01-28 08:13:05.066] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 08:13:05.066] [INFO] 开始扫描主机192.168.47.128的服务，开放端口数: 1
+[2026-01-28 08:13:07.108] [INFO] 192.168.47.128:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 08:13:07.108] [INFO] 192.168.47.128 服务扫描完成
+[2026-01-28 08:13:07.108] [INFO] 开始扫描主机192.168.167.238的服务，开放端口数: 1
+[2026-01-28 08:13:09.172] [INFO] 192.168.167.238:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 08:13:09.172] [INFO] 192.168.167.238 服务扫描完成
+[2026-01-28 08:13:09.172] [INFO] 服务扫描结束
+[2026-01-28 08:13:09.172] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 08:13:09.173] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=53, 实际延迟=103ms
+[2026-01-28 08:13:09.276] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 08:13:09.276] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 08:13:09.276] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 08:13:09.276] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 08:13:09.276] [INFO] 任务完成，结果类型: map[string]string
+[2026-01-28 08:31:52.640] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 08:31:52.663] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238] [21 22 23 80 443 3389 3306 8080] random 100 5 false false}
+[2026-01-28 08:31:52.663] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=132ms
+[2026-01-28 08:31:52.796] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238]
+[2026-01-28 08:31:52.796] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 08:31:52.796] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 08:31:52.796] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 08:31:52.897] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 08:31:52.897] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 08:31:52.898] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 08:31:52.898] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 08:31:52.999] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 08:31:52.999] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 08:31:52.999] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 08:31:52.999] [INFO] ICMP扫描（部分回退到TCP）完成，发现2个在线主机
+[2026-01-28 08:31:52.999] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 08:31:52.999] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=66ms
+[2026-01-28 08:31:53.066] [INFO] TCP端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238]
+[2026-01-28 08:31:53.066] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 08:31:53.066] [INFO] 延迟配置: 类型=random, 值=100ms
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 6: 步骤=0, 延迟类型=random, 延迟=53ms, 目标=192.168.167.29:443
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 5: 步骤=0, 延迟类型=random, 延迟=72ms, 目标=192.168.167.29:22
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 7: 步骤=0, 延迟类型=random, 延迟=91ms, 目标=192.168.167.29:3389
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 8: 步骤=0, 延迟类型=random, 延迟=80ms, 目标=192.168.167.29:3306
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 1: 步骤=0, 延迟类型=random, 延迟=127ms, 目标=192.168.167.29:21
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 9: 步骤=0, 延迟类型=random, 延迟=52ms, 目标=192.168.167.29:8080
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 4: 步骤=0, 延迟类型=random, 延迟=112ms, 目标=192.168.167.29:80
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 3: 步骤=0, 延迟类型=random, 延迟=66ms, 目标=192.168.167.29:23
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 10: 步骤=0, 延迟类型=random, 延迟=78ms, 目标=192.168.167.238:21
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 11: 步骤=0, 延迟类型=random, 延迟=109ms, 目标=192.168.167.238:22
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 12: 步骤=0, 延迟类型=random, 延迟=55ms, 目标=192.168.167.238:23
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 13: 步骤=0, 延迟类型=random, 延迟=90ms, 目标=192.168.167.238:80
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 2: 步骤=0, 延迟类型=random, 延迟=141ms, 目标=192.168.167.238:443
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 14: 步骤=0, 延迟类型=random, 延迟=132ms, 目标=192.168.167.238:3389
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 16: 步骤=0, 延迟类型=random, 延迟=101ms, 目标=192.168.167.238:3306
+[2026-01-28 08:31:53.066] [INFO] 端口扫描Worker 15: 步骤=0, 延迟类型=random, 延迟=92ms, 目标=192.168.167.238:8080
+[2026-01-28 08:31:53.147] [INFO] 192.168.167.29:3306 端口开放
+[2026-01-28 08:31:53.178] [INFO] 192.168.167.29:80 端口开放
+[2026-01-28 08:31:53.193] [INFO] 192.168.167.29:21 端口开放
+[2026-01-28 08:31:55.155] [INFO] 192.168.167.29:443 端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.155] [INFO] 192.168.167.29:8080 端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.168] [INFO] 192.168.167.29:23 端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.175] [INFO] 192.168.167.238:23 端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.184] [INFO] 192.168.167.29:22 端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.187] [INFO] 192.168.167.238:21 端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.200] [INFO] 192.168.167.29:3389 端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.204] [INFO] 192.168.167.238:80 端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.204] [INFO] 192.168.167.238:8080 端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.219] [INFO] 192.168.167.238:3306 端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.219] [INFO] 192.168.167.238:22 端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.249] [INFO] 192.168.167.238:3389 端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.252] [INFO] 192.168.167.238:443 端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:31:55.252] [INFO] 端口扫描延迟统计: 总任务数=16, 平均延迟=100ms, 估算总延迟=1.6s
+[2026-01-28 08:31:55.252] [INFO] TCP端口扫描结束
+[2026-01-28 08:31:55.252] [INFO] 任务完成，结果类型: map[string][]int
+[2026-01-28 08:31:55.253] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=93ms
+[2026-01-28 08:31:55.347] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 08:31:55.347] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 3
+[2026-01-28 08:31:55.347] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 08:31:55.366] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 08:31:55.367] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 08:31:55.367] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 08:31:55.367] [INFO] 服务扫描结束
+[2026-01-28 08:31:55.367] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 08:31:55.368] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=53, 实际延迟=101ms
+[2026-01-28 08:31:55.469] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 08:31:55.469] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 08:31:55.469] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 08:31:55.469] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 08:31:55.469] [INFO] 任务完成，结果类型: map[string]string
+[2026-01-28 08:37:01.772] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 08:37:01.772] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] constant 100 5 false false}
+[2026-01-28 08:37:01.773] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=50, 实际延迟=100ms
+[2026-01-28 08:37:01.873] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:37:01.873] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 08:37:01.873] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 08:37:01.873] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 08:37:01.873] [INFO] ICMP Worker 3: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 08:37:01.974] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 08:37:01.974] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 08:37:01.974] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 08:37:01.974] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 08:37:01.974] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 08:37:02.075] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 08:37:02.075] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 08:37:02.075] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 08:37:02.075] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 08:37:02.075] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 08:37:02.075] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 08:37:02.075] [INFO] ICMP扫描（部分回退到TCP）完成，发现3个在线主机
+[2026-01-28 08:37:02.075] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 08:37:02.075] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=51, 实际延迟=100ms
+[2026-01-28 08:37:02.176] [INFO] TCP端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:37:02.176] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 08:37:02.176] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 11: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:23
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 10: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:22
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 12: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:80
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 5: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:443
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 6: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3389
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 13: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:443
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 1: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:23
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 14: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3389
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 7: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3306
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 15: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3306
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 8: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:8080
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 9: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:21
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 2: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:22
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 16: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:8080
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 3: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:21
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 4: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:80
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 20: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:80
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 24: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:8080
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 17: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:21
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 22: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3389
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 19: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:23
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 23: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3306
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 21: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:443
+[2026-01-28 08:37:02.176] [INFO] 端口扫描Worker 18: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:22
+[2026-01-28 08:37:02.276] [INFO] 192.168.167.29:80 端口开放
+[2026-01-28 08:37:02.276] [INFO] 192.168.167.29:21 端口开放
+[2026-01-28 08:37:02.276] [INFO] 192.168.167.29:3306 端口开放
+[2026-01-28 08:37:04.308] [INFO] 192.168.167.29:22 端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.308] [INFO] 192.168.167.29:23 端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.308] [INFO] 192.168.167.29:443 端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.308] [INFO] 192.168.167.29:3389 端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.308] [INFO] 192.168.167.29:8080 端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:3389 端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:22 端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:443 端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:80 端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:3306 端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:23 端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:21 端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.309] [INFO] 192.168.47.128:8080 端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.317] [INFO] 192.168.167.238:23 端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:443 端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:22 端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:3389 端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:3306 端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:21 端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:80 端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 192.168.167.238:8080 端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:37:04.327] [INFO] 端口扫描延迟统计: 总任务数=24, 平均延迟=100ms, 估算总延迟=2.4s
+[2026-01-28 08:37:04.327] [INFO] TCP端口扫描结束
+[2026-01-28 08:37:04.327] [INFO] 任务完成，结果类型: map[string][]int
+[2026-01-28 08:37:04.328] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=52, 实际延迟=100ms
+[2026-01-28 08:37:04.428] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 08:37:04.428] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 3
+[2026-01-28 08:37:04.429] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 08:37:04.430] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 08:37:04.434] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 08:37:04.434] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 08:37:04.434] [INFO] 服务扫描结束
+[2026-01-28 08:37:04.434] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 08:37:04.435] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=53, 实际延迟=100ms
+[2026-01-28 08:37:04.535] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 08:37:04.535] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 08:37:04.535] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 08:37:04.535] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 08:37:04.535] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 08:37:04.535] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 08:37:04.535] [INFO] 任务完成，结果类型: map[string]string
+[2026-01-28 08:39:06.542] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 08:39:06.565] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] random 100 5 false false}
+[2026-01-28 08:39:06.565] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=112ms
+[2026-01-28 08:39:06.677] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:39:06.677] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 08:39:06.677] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 08:39:06.677] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 08:39:06.677] [INFO] ICMP Worker 3: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 08:39:06.779] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 08:39:06.779] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 08:39:06.779] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 08:39:06.780] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 08:39:06.780] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 08:39:06.880] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 08:39:06.880] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 08:39:06.880] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 08:39:06.880] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 08:39:06.880] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 08:39:06.880] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 08:39:06.881] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 08:39:06.881] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 08:39:06.881] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=107ms
+[2026-01-28 08:39:06.988] [INFO] TCP端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:39:06.988] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 08:39:06.988] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 6: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:443
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 1: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:80
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 4: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:22
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 5: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:23
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 17: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:21
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 7: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3306
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 10: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:8080
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 3: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3389
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 2: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:21
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 8: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:21
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 18: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:22
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 9: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:22
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 14: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:443
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 15: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3389
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 19: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:23
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 16: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:8080
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 20: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:80
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 12: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:23
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 21: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:443
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 13: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:80
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 22: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3389
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 23: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3306
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 24: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:8080
+[2026-01-28 08:39:06.988] [INFO] 端口扫描Worker 11: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3306
+[2026-01-28 08:39:07.089] [INFO] 192.168.167.29:3306 端口开放
+[2026-01-28 08:39:07.089] [INFO] 192.168.167.29:21 端口开放
+[2026-01-28 08:39:07.090] [INFO] 192.168.167.29:80 端口开放
+[2026-01-28 08:39:09.125] [INFO] 192.168.167.29:23 端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:23 端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.167.29:8080 端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:3306 端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.167.29:443 端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.167.29:22 端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:22 端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:443 端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:3389 端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:8080 端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.167.29:3389 端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:80 端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.125] [INFO] 192.168.47.128:21 端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:22 端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:80 端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:23 端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:21 端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:3389 端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.133] [INFO] 192.168.167.238:8080 端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.134] [INFO] 192.168.167.238:3306 端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.134] [INFO] 192.168.167.238:443 端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:39:09.134] [INFO] 端口扫描延迟统计: 总任务数=24, 平均延迟=100ms, 估算总延迟=2.4s
+[2026-01-28 08:39:09.134] [INFO] TCP端口扫描结束
+[2026-01-28 08:39:09.134] [INFO] 任务完成，结果类型: map[string][]int
+[2026-01-28 08:39:09.134] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=126ms
+[2026-01-28 08:39:09.261] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 08:39:09.261] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 3
+[2026-01-28 08:39:09.262] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 08:39:09.264] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 08:39:09.264] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 08:39:09.264] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 08:39:09.264] [INFO] 服务扫描结束
+[2026-01-28 08:39:09.264] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 08:39:09.265] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 08:39:09.265] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 08:39:09.265] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 08:39:09.265] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 08:39:09.265] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 08:39:09.265] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 08:44:08.817] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 08:44:08.840] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] random 100 5 false false}
+[2026-01-28 08:44:08.840] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=92ms
+[2026-01-28 08:44:08.933] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:44:08.933] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 08:44:08.933] [INFO] ICMP Worker 3: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 08:44:08.933] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 08:44:08.933] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 08:44:09.035] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 08:44:09.035] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 08:44:09.035] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 08:44:09.036] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 08:44:09.036] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 08:44:09.136] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 08:44:09.136] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 08:44:09.136] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 08:44:09.136] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 08:44:09.136] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 08:44:09.136] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 08:44:09.137] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 08:44:09.137] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 08:44:09.137] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=110ms
+[2026-01-28 08:44:09.247] [INFO] TCP端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 08:44:09.247] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 08:44:09.247] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 9: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:21
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 4: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:80
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 8: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:8080
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 19: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:23
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 11: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:23
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 1: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:21
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 5: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:443
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 2: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:22
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 3: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:23
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 7: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3389
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 16: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:8080
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 24: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:8080
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 17: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:21
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 10: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:22
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 15: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3306
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 6: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.29:3306
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 13: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:443
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 18: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:22
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 14: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:3389
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 21: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:443
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 12: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.167.238:80
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 20: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:80
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 23: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3306
+[2026-01-28 08:44:09.247] [INFO] 端口扫描Worker 22: 步骤=0, 延迟类型=constant, 延迟=100ms, 目标=192.168.47.128:3389
+[2026-01-28 08:44:09.349] [INFO] 192.168.167.29:21 端口开放
+[2026-01-28 08:44:09.349] [INFO] 192.168.167.29:80 端口开放
+[2026-01-28 08:44:09.349] [INFO] 192.168.167.29:3306 端口开放
+[2026-01-28 08:44:11.392] [INFO] 192.168.167.29:443 端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.167.29:23 端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:443 端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:21 端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.167.29:3389 端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:3389 端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:22 端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.167.29:8080 端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:23 端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:3306 端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.167.29:22 端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:8080 端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.392] [INFO] 192.168.47.128:80 端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.442] [INFO] 192.168.167.238:3389 端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.442] [INFO] 192.168.167.238:80 端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.443] [INFO] 192.168.167.238:443 端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.443] [INFO] 192.168.167.238:3306 端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.443] [INFO] 192.168.167.238:22 端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.446] [INFO] 192.168.167.238:21 端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.446] [INFO] 192.168.167.238:23 端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.446] [INFO] 192.168.167.238:8080 端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 08:44:11.446] [INFO] 端口扫描延迟统计: 总任务数=24, 平均延迟=100ms, 估算总延迟=2.4s
+[2026-01-28 08:44:11.446] [INFO] TCP端口扫描结束
+[2026-01-28 08:44:11.446] [INFO] 任务完成，结果类型: map[string][]int
+[2026-01-28 08:44:11.447] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=77ms
+[2026-01-28 08:44:11.525] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 08:44:11.525] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 3
+[2026-01-28 08:44:11.526] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 08:44:11.528] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 08:44:11.529] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 08:44:11.529] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 08:44:11.529] [INFO] 服务扫描结束
+[2026-01-28 08:44:11.529] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 08:44:11.529] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 08:44:11.529] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 08:44:11.529] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 08:44:11.529] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 08:44:11.529] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 08:44:11.529] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 09:07:12.291] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 09:07:12.315] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080] random 100 5 true true}
+[2026-01-28 09:07:12.315] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=68ms
+[2026-01-28 09:07:12.383] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:07:12.383] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 09:07:12.383] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 09:07:12.383] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 09:07:12.383] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 09:07:12.485] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 09:07:12.485] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 09:07:12.485] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 09:07:12.486] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 09:07:12.486] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 09:07:12.586] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 09:07:12.586] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 09:07:12.586] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 09:07:12.586] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 09:07:12.586] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 09:07:12.586] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 09:07:12.587] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 09:07:12.587] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 09:07:12.587] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=112ms
+[2026-01-28 09:07:12.700] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:07:12.700] [INFO] 待扫描端口列表: [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080]
+[2026-01-28 09:07:12.700] [INFO] 延迟配置: 类型=random, 值=100ms
+[2026-01-28 09:07:12.700] [INFO] 扫描协议: TCP=true, SMB=true, UDP=true
+[2026-01-28 09:07:12.754] [INFO] 192.168.47.128:25 TCP端口开放
+[2026-01-28 09:07:12.761] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 09:07:12.762] [INFO] 192.168.167.29:25 TCP端口开放
+[2026-01-28 09:07:12.771] [INFO] 192.168.47.128:110 TCP端口开放
+[2026-01-28 09:07:12.788] [INFO] 192.168.167.29:110 TCP端口开放
+[2026-01-28 09:07:12.796] [INFO] 192.168.167.238:53 TCP端口开放
+[2026-01-28 09:07:12.797] [INFO] 192.168.47.128:143 TCP端口开放
+[2026-01-28 09:07:12.798] [INFO] 192.168.167.238:25 TCP端口开放
+[2026-01-28 09:07:12.800] [INFO] 192.168.167.238:143 TCP端口开放
+[2026-01-28 09:07:12.808] [INFO] 192.168.167.238:110 TCP端口开放
+[2026-01-28 09:07:12.819] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 09:07:12.824] [INFO] 192.168.167.29:139 TCP端口开放
+[2026-01-28 09:07:12.833] [INFO] 192.168.167.29:143 TCP端口开放
+[2026-01-28 09:07:12.843] [INFO] 192.168.167.29:445 TCP端口开放
+[2026-01-28 09:07:12.846] [INFO] 192.168.167.29:135 TCP端口开放
+[2026-01-28 09:07:12.849] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 09:07:14.801] [INFO] 192.168.167.29:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.29:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.801] [INFO] 192.168.47.128:135 TCP端口关闭或无法连接: dial tcp 192.168.47.128:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.801] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.801] [INFO] 192.168.47.128:53 TCP端口关闭或无法连接: dial tcp 192.168.47.128:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.801] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.801] [INFO] 192.168.47.128:139 TCP端口关闭或无法连接: dial tcp 192.168.47.128:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.804] [INFO] 192.168.167.238:135 TCP端口关闭或无法连接: dial tcp 192.168.167.238:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.804] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.804] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.804] [INFO] 192.168.167.238:993 TCP端口关闭或无法连接: dial tcp 192.168.167.238:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.804] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.815] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.815] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.831] [INFO] 192.168.167.29:53 TCP端口关闭或无法连接: dial tcp 192.168.167.29:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.831] [INFO] 192.168.167.29:993 TCP端口关闭或无法连接: dial tcp 192.168.167.29:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.831] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.831] [INFO] 192.168.167.29:995 TCP端口关闭或无法连接: dial tcp 192.168.167.29:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.832] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.846] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.861] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.861] [INFO] 192.168.47.128:1723 TCP端口关闭或无法连接: dial tcp 192.168.47.128:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.861] [INFO] 192.168.47.128:445 TCP端口关闭或无法连接: dial tcp 192.168.47.128:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.876] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.876] [INFO] 192.168.167.29:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.29:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.876] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.893] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.238:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.238:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:445 TCP端口关闭或无法连接: dial tcp 192.168.167.238:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:995 TCP端口关闭或无法连接: dial tcp 192.168.167.238:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:139 TCP端口关闭或无法连接: dial tcp 192.168.167.238:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.897] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.908] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.923] [INFO] 192.168.47.128:995 TCP端口关闭或无法连接: dial tcp 192.168.47.128:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.923] [INFO] 192.168.47.128:993 TCP端口关闭或无法连接: dial tcp 192.168.47.128:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.939] [INFO] 192.168.47.128:5900 TCP端口关闭或无法连接: dial tcp 192.168.47.128:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.939] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:07:14.948] [INFO] 192.168.167.238:53 UDP端口开放，响应: 000081800001000200000000076578616d706c6503636f6d0000010001c00c0001000100000258000468121a78c00c0001000100000258000468121b78
+[2026-01-28 09:07:17.899] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 09:07:17.904] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 09:07:17.933] [INFO] 192.168.167.29:25 UDP端口可能开放（无响应）
+[2026-01-28 09:07:17.945] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 09:07:17.946] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 09:07:17.992] [INFO] 192.168.167.29:53 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.860] [INFO] 192.168.167.29:445 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.860] [INFO] 192.168.167.29:993 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.864] [INFO] 192.168.167.29:143 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.886] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.886] [INFO] 192.168.167.29:110 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.887] [INFO] 192.168.167.29:135 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.895] [INFO] 192.168.167.29:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.898] [INFO] 192.168.167.29:139 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.900] [INFO] 192.168.167.29:995 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.902] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.910] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.910] [INFO] 192.168.167.29:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.910] [INFO] 192.168.167.238:25 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.927] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.929] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.947] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.947] [INFO] 192.168.167.238:143 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.956] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.957] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.958] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.962] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.965] [INFO] 192.168.167.238:993 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.966] [INFO] 192.168.167.238:139 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.969] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.977] [INFO] 192.168.167.238:110 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.978] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.984] [INFO] 192.168.167.238:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.984] [INFO] 192.168.167.238:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.987] [INFO] 192.168.47.128:25 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.988] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.990] [INFO] 192.168.47.128:53 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.993] [INFO] 192.168.167.238:135 UDP端口可能开放（无响应）
+[2026-01-28 09:07:19.998] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.011] [INFO] 192.168.47.128:143 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.012] [INFO] 192.168.167.238:445 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.027] [INFO] 192.168.167.238:995 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.027] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.032] [INFO] 192.168.47.128:135 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.037] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.038] [INFO] 192.168.47.128:110 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.060] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.076] [INFO] 192.168.47.128:139 UDP端口可能开放（无响应）
+[2026-01-28 09:07:20.207] [INFO] 192.168.47.128:445 UDP端口可能开放（无响应）
+[2026-01-28 09:07:22.984] [INFO] 192.168.47.128:993 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.002] [INFO] 192.168.47.128:995 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.006] [INFO] 192.168.47.128:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.031] [INFO] 192.168.47.128:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.036] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.051] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.075] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:07:23.075] [INFO] 综合端口扫描结束
+[2026-01-28 09:07:23.075] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:07:23.075] [ERROR] 端口扫描结果类型断言失败
+[2026-01-28 09:12:43.755] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 09:12:43.777] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] random 100 5 true true}
+[2026-01-28 09:12:43.777] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=140ms
+[2026-01-28 09:12:43.917] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:12:43.917] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 09:12:43.917] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 09:12:43.917] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 09:12:43.917] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 09:12:44.019] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 09:12:44.019] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 09:12:44.019] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 09:12:44.019] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 09:12:44.019] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 09:12:44.120] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 09:12:44.120] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 09:12:44.120] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 09:12:44.120] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 09:12:44.120] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 09:12:44.120] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 09:12:44.121] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 09:12:44.121] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 09:12:44.121] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=50ms
+[2026-01-28 09:12:44.171] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:12:44.171] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 09:12:44.171] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 09:12:44.171] [INFO] 扫描协议: TCP=true, SMB=true, UDP=true
+[2026-01-28 09:12:44.273] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 09:12:44.273] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 09:12:44.273] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 09:12:46.310] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.310] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.314] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.314] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.314] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.314] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.315] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.315] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.331] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:46.331] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:12:49.272] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.272] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.272] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.273] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.274] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.374] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:12:49.374] [INFO] 综合端口扫描结束
+[2026-01-28 09:12:49.374] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:12:49.374] [ERROR] 端口扫描结果类型断言失败
+[2026-01-28 09:37:08.726] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 09:37:08.750] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] random 100 5 true true}
+[2026-01-28 09:37:08.750] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=96ms
+[2026-01-28 09:37:08.846] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:37:08.846] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 09:37:08.846] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 09:37:08.846] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 09:37:08.846] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 09:37:08.948] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 09:37:08.948] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 09:37:08.948] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 09:37:08.949] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 09:37:08.949] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 09:37:09.049] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 09:37:09.049] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 09:37:09.049] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 09:37:09.049] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 09:37:09.049] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 09:37:09.049] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 09:37:09.050] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 09:37:09.050] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 09:37:09.050] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=126ms
+[2026-01-28 09:37:09.176] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:37:09.176] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 09:37:09.176] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 09:37:09.176] [INFO] 扫描协议: TCP=true, SMB=true, UDP=true
+[2026-01-28 09:37:09.278] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 09:37:09.278] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 09:37:09.278] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 09:37:11.308] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.308] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.322] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.322] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.322] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.322] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.322] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:11.388] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:37:14.277] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.277] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.277] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.278] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.279] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.279] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.279] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.279] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.379] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:37:14.379] [INFO] 综合端口扫描结束
+[2026-01-28 09:37:14.379] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:37:14.379] [INFO] 端口扫描结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:37:14.380] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=131ms
+[2026-01-28 09:37:14.511] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 09:37:14.511] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 3
+[2026-01-28 09:37:14.543] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 09:37:14.545] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 09:37:14.548] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 09:37:14.548] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 09:37:14.548] [INFO] 服务扫描结束
+[2026-01-28 09:37:14.548] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 09:37:14.548] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 09:37:14.548] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 09:37:14.548] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 09:37:14.548] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 09:37:14.548] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 09:37:14.548] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 09:38:53.357] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 09:38:53.381] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080] constant 100 5 true true}
+[2026-01-28 09:38:53.382] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=50, 实际延迟=100ms
+[2026-01-28 09:38:53.482] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 09:38:53.482] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 09:38:53.482] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 09:38:53.482] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 09:38:53.482] [INFO] ICMP Worker 3: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 09:38:53.583] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 09:38:53.583] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 09:38:53.583] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 09:38:53.584] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 09:38:53.584] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 09:38:53.684] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 09:38:53.684] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 09:38:53.684] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 09:38:53.684] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 09:38:53.684] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 09:38:53.684] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 09:38:53.685] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 09:38:53.685] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 09:38:53.685] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=51, 实际延迟=100ms
+[2026-01-28 09:38:53.786] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.47.128 192.168.167.238]
+[2026-01-28 09:38:53.786] [INFO] 待扫描端口列表: [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080]
+[2026-01-28 09:38:53.786] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 09:38:53.786] [INFO] 扫描协议: TCP=true, SMB=true, UDP=true
+[2026-01-28 09:38:53.887] [INFO] 192.168.47.128:110 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.29:143 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.238:110 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.29:139 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.238:25 TCP端口开放
+[2026-01-28 09:38:53.887] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.47.128:25 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.29:445 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.238:143 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.29:25 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.47.128:143 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.29:135 TCP端口开放
+[2026-01-28 09:38:53.888] [INFO] 192.168.167.29:110 TCP端口开放
+[2026-01-28 09:38:53.900] [INFO] 192.168.167.238:53 TCP端口开放
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:993 TCP端口关闭或无法连接: dial tcp 192.168.167.29:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:53 TCP端口关闭或无法连接: dial tcp 192.168.167.29:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.29:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:995 TCP端口关闭或无法连接: dial tcp 192.168.167.29:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.926] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.167.29:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.29:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:139 TCP端口关闭或无法连接: dial tcp 192.168.47.128:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:445 TCP端口关闭或无法连接: dial tcp 192.168.47.128:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:995 TCP端口关闭或无法连接: dial tcp 192.168.47.128:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:135 TCP端口关闭或无法连接: dial tcp 192.168.47.128:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:993 TCP端口关闭或无法连接: dial tcp 192.168.47.128:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:1723 TCP端口关闭或无法连接: dial tcp 192.168.47.128:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:5900 TCP端口关闭或无法连接: dial tcp 192.168.47.128:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.927] [INFO] 192.168.47.128:53 TCP端口关闭或无法连接: dial tcp 192.168.47.128:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.946] [INFO] 192.168.167.238:135 TCP端口关闭或无法连接: dial tcp 192.168.167.238:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.946] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.946] [INFO] 192.168.167.238:445 TCP端口关闭或无法连接: dial tcp 192.168.167.238:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.946] [INFO] 192.168.167.238:139 TCP端口关闭或无法连接: dial tcp 192.168.167.238:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.946] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.948] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.948] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:55.948] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.238:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:995 TCP端口关闭或无法连接: dial tcp 192.168.167.238:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:993 TCP端口关闭或无法连接: dial tcp 192.168.167.238:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.238:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.038] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 09:38:56.180] [INFO] 192.168.167.238:53 UDP端口开放，响应: 000081800001000200000000076578616d706c6503636f6d0000010001c00c0001000100000258000468121b78c00c0001000100000258000468121a78
+[2026-01-28 09:38:58.988] [INFO] 192.168.167.29:53 UDP端口可能开放（无响应）
+[2026-01-28 09:38:58.988] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 09:38:58.988] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 09:38:58.988] [INFO] 192.168.167.29:25 UDP端口可能开放（无响应）
+[2026-01-28 09:38:58.988] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 09:38:59.001] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:445 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:135 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:135 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.167.29:110 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:25 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.027] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:110 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:993 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:143 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:139 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:139 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:53 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:445 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:993 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:995 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.47.128:143 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.028] [INFO] 192.168.167.29:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.047] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.047] [INFO] 192.168.47.128:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.047] [INFO] 192.168.47.128:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.047] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.047] [INFO] 192.168.47.128:995 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.048] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.048] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.048] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.118] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:143 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:25 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:139 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:110 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.138] [INFO] 192.168.167.238:135 UDP端口可能开放（无响应）
+[2026-01-28 09:39:01.281] [INFO] 192.168.167.238:445 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.089] [INFO] 192.168.167.238:5900 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.089] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.089] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.090] [INFO] 192.168.167.238:1723 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.090] [INFO] 192.168.167.238:993 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.090] [INFO] 192.168.167.238:995 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.102] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 09:39:04.102] [INFO] 综合端口扫描结束
+[2026-01-28 09:39:04.102] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:39:04.102] [INFO] 端口扫描结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 09:39:04.102] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=52, 实际延迟=100ms
+[2026-01-28 09:39:04.203] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 09:39:04.203] [INFO] 开始扫描主机192.168.47.128的服务，开放端口数: 3
+[2026-01-28 09:39:06.204] [INFO] 192.168.47.128:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:08.239] [INFO] 192.168.47.128:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:10.240] [INFO] 192.168.47.128:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:10.240] [INFO] 192.168.47.128 服务扫描完成
+[2026-01-28 09:39:10.240] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 9
+[2026-01-28 09:39:12.241] [INFO] 192.168.167.29:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:12.243] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 09:39:14.244] [INFO] 192.168.167.29:139 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:14.245] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 09:39:16.246] [INFO] 192.168.167.29:445 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:18.284] [INFO] 192.168.167.29:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:18.287] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 09:39:20.287] [INFO] 192.168.167.29:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:22.289] [INFO] 192.168.167.29:135 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:22.289] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 09:39:22.289] [INFO] 开始扫描主机192.168.167.238的服务，开放端口数: 4
+[2026-01-28 09:39:24.290] [INFO] 192.168.167.238:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:26.345] [INFO] 192.168.167.238:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:28.346] [INFO] 192.168.167.238:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 09:39:28.352] [INFO] 192.168.167.238:53 识别为: DNS Server (置信度: 95%)
+[2026-01-28 09:39:28.352] [INFO] 192.168.167.238 服务扫描完成
+[2026-01-28 09:39:28.352] [INFO] 服务扫描结束
+[2026-01-28 09:39:28.352] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 09:39:28.353] [INFO] 任务调度: 延迟类型=constant, 基础值=100ms, 步长=53, 实际延迟=100ms
+[2026-01-28 09:39:28.453] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 09:39:28.453] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 09:39:28.453] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 09:39:28.453] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 09:39:28.453] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 09:39:28.453] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 09:39:28.453] [INFO] 任务完成，结果类型: map[string]string
+[2026-01-28 10:43:44.430] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 10:43:44.459] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 80 443 3389 3306 8080] random 100 5 true true}
+[2026-01-28 10:43:44.492] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=63ms
+[2026-01-28 10:43:44.556] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 10:43:44.556] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 10:43:44.556] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 10:43:44.556] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 10:43:44.556] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 10:43:44.658] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 10:43:44.658] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 10:43:44.658] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 10:43:44.658] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 10:43:44.658] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 10:43:44.759] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 10:43:44.759] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 10:43:44.759] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 10:43:44.759] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 10:43:44.759] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 10:43:44.759] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 10:43:44.760] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 10:43:44.760] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 10:43:44.760] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=85ms
+[2026-01-28 10:43:44.845] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 10:43:44.845] [INFO] 待扫描端口列表: [21 22 23 80 443 3389 3306 8080]
+[2026-01-28 10:43:44.845] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 10:43:44.845] [INFO] 扫描协议: TCP=true, UDP=true
+[2026-01-28 10:43:44.947] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 10:43:44.948] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 10:43:44.948] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 10:43:46.993] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:46.993] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:46.993] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:46.993] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:46.993] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.008] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.012] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.012] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.027] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.027] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.027] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.027] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.028] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:47.028] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:43:49.946] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.946] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.947] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.947] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.947] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 10:43:49.947] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 10:44:52.540] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 10:44:52.563] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080] random 100 5 false true}
+[2026-01-28 10:44:52.564] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=72ms
+[2026-01-28 10:44:52.636] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 10:44:52.636] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 10:44:52.636] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 10:44:52.636] [INFO] ICMP Worker 3: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 10:44:52.636] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 10:44:52.738] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 10:44:52.738] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 10:44:52.738] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 10:44:52.738] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 10:44:52.738] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 10:44:52.839] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 10:44:52.839] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 10:44:52.839] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 10:44:52.839] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 10:44:52.839] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 10:44:52.839] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 10:44:52.839] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 10:44:52.839] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 10:44:52.840] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=132ms
+[2026-01-28 10:44:52.972] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.47.128 192.168.167.238]
+[2026-01-28 10:44:52.972] [INFO] 待扫描端口列表: [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080]
+[2026-01-28 10:44:52.972] [INFO] 延迟配置: 类型=random, 值=100ms
+[2026-01-28 10:44:52.972] [INFO] 扫描协议: TCP=true, UDP=true
+[2026-01-28 10:44:53.025] [INFO] 192.168.47.128:25 TCP端口开放
+[2026-01-28 10:44:53.031] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 10:44:53.042] [INFO] 192.168.167.29:25 TCP端口开放
+[2026-01-28 10:44:53.048] [INFO] 192.168.167.238:53 TCP端口开放
+[2026-01-28 10:44:53.062] [INFO] 192.168.167.238:110 TCP端口开放
+[2026-01-28 10:44:53.066] [INFO] 192.168.167.29:445 TCP端口开放
+[2026-01-28 10:44:53.067] [INFO] 192.168.167.238:143 TCP端口开放
+[2026-01-28 10:44:53.078] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 10:44:53.081] [INFO] 192.168.167.29:135 TCP端口开放
+[2026-01-28 10:44:53.084] [INFO] 192.168.167.238:25 TCP端口开放
+[2026-01-28 10:44:53.088] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 10:44:53.101] [INFO] 192.168.47.128:110 TCP端口开放
+[2026-01-28 10:44:53.105] [INFO] 192.168.167.29:110 TCP端口开放
+[2026-01-28 10:44:53.105] [INFO] 192.168.167.29:139 TCP端口开放
+[2026-01-28 10:44:53.113] [INFO] 192.168.47.128:143 TCP端口开放
+[2026-01-28 10:44:53.121] [INFO] 192.168.167.29:143 TCP端口开放
+[2026-01-28 10:44:55.074] [INFO] 192.168.167.29:995 TCP端口关闭或无法连接: dial tcp 192.168.167.29:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.074] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.087] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.087] [INFO] 192.168.167.238:445 TCP端口关闭或无法连接: dial tcp 192.168.167.238:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.089] [INFO] 192.168.47.128:445 TCP端口关闭或无法连接: dial tcp 192.168.47.128:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.089] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.089] [INFO] 192.168.47.128:139 TCP端口关闭或无法连接: dial tcp 192.168.47.128:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.092] [INFO] 192.168.167.238:139 TCP端口关闭或无法连接: dial tcp 192.168.167.238:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.105] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.105] [INFO] 192.168.167.29:53 TCP端口关闭或无法连接: dial tcp 192.168.167.29:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.105] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.105] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.120] [INFO] 192.168.167.29:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.29:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.120] [INFO] 192.168.167.29:993 TCP端口关闭或无法连接: dial tcp 192.168.167.29:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.120] [INFO] 192.168.47.128:1723 TCP端口关闭或无法连接: dial tcp 192.168.47.128:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.120] [INFO] 192.168.47.128:53 TCP端口关闭或无法连接: dial tcp 192.168.47.128:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.120] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.129] [INFO] 192.168.167.238:135 TCP端口关闭或无法连接: dial tcp 192.168.167.238:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.130] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.135] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.136] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.136] [INFO] 192.168.47.128:5900 TCP端口关闭或无法连接: dial tcp 192.168.47.128:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.150] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.150] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.150] [INFO] 192.168.167.29:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.29:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:995 TCP端口关闭或无法连接: dial tcp 192.168.47.128:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:135 TCP端口关闭或无法连接: dial tcp 192.168.47.128:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:993 TCP端口关闭或无法连接: dial tcp 192.168.47.128:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.151] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.238:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:993 TCP端口关闭或无法连接: dial tcp 192.168.167.238:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:995 TCP端口关闭或无法连接: dial tcp 192.168.167.238:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.186] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.202] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.202] [INFO] 192.168.167.238:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.238:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:44:55.278] [INFO] 192.168.167.238:53 UDP端口开放，响应: 000081800001000200000000076578616d706c6503636f6d0000010001c00c0001000100000258000468121a78c00c0001000100000258000468121b78
+[2026-01-28 10:44:58.150] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.173] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.175] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.189] [INFO] 192.168.167.29:53 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.194] [INFO] 192.168.167.29:25 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.197] [INFO] 192.168.167.29:135 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.229] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.236] [INFO] 192.168.167.29:139 UDP端口可能开放（无响应）
+[2026-01-28 10:44:58.244] [INFO] 192.168.167.29:110 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.146] [INFO] 192.168.167.29:995 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.165] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.176] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.178] [INFO] 192.168.47.128:53 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.182] [INFO] 192.168.167.29:143 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.193] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.193] [INFO] 192.168.47.128:139 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.195] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.195] [INFO] 192.168.167.29:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.198] [INFO] 192.168.167.29:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.200] [INFO] 192.168.167.29:445 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.201] [INFO] 192.168.167.29:993 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.205] [INFO] 192.168.47.128:143 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.206] [INFO] 192.168.47.128:993 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.209] [INFO] 192.168.47.128:25 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.212] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.214] [INFO] 192.168.47.128:135 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.217] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.217] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.220] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.220] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.221] [INFO] 192.168.47.128:445 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.222] [INFO] 192.168.47.128:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.230] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.264] [INFO] 192.168.47.128:110 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.267] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.279] [INFO] 192.168.47.128:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.285] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.291] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.291] [INFO] 192.168.167.238:25 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.295] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.296] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.296] [INFO] 192.168.47.128:995 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.306] [INFO] 192.168.167.238:110 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.316] [INFO] 192.168.167.238:139 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.322] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.324] [INFO] 192.168.167.238:143 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.326] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.331] [INFO] 192.168.167.238:135 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.337] [INFO] 192.168.167.238:445 UDP端口可能开放（无响应）
+[2026-01-28 10:45:00.416] [INFO] 192.168.167.238:993 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.224] [INFO] 192.168.167.238:995 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.287] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.297] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.308] [INFO] 192.168.167.238:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.324] [INFO] 192.168.167.238:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.330] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:45:03.330] [INFO] 综合端口扫描结束
+[2026-01-28 10:45:03.330] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 10:45:03.330] [INFO] 端口扫描结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 10:45:03.331] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=86ms
+[2026-01-28 10:45:03.418] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 10:45:03.418] [INFO] 开始扫描主机192.168.47.128的服务，开放端口数: 3
+[2026-01-28 10:45:05.457] [INFO] 192.168.47.128:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:07.458] [INFO] 192.168.47.128:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:09.459] [INFO] 192.168.47.128:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:09.459] [INFO] 192.168.47.128 服务扫描完成
+[2026-01-28 10:45:09.459] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 9
+[2026-01-28 10:45:09.481] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 10:45:11.524] [INFO] 192.168.167.29:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:13.525] [INFO] 192.168.167.29:445 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:13.526] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 10:45:15.526] [INFO] 192.168.167.29:135 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:15.550] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 10:45:17.551] [INFO] 192.168.167.29:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:19.552] [INFO] 192.168.167.29:139 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:21.553] [INFO] 192.168.167.29:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:21.553] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 10:45:21.553] [INFO] 开始扫描主机192.168.167.238的服务，开放端口数: 4
+[2026-01-28 10:45:21.562] [INFO] 192.168.167.238:53 识别为: DNS Server (置信度: 95%)
+[2026-01-28 10:45:23.563] [INFO] 192.168.167.238:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:25.564] [INFO] 192.168.167.238:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:27.732] [INFO] 192.168.167.238:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:45:27.732] [INFO] 192.168.167.238 服务扫描完成
+[2026-01-28 10:45:27.732] [INFO] 服务扫描结束
+[2026-01-28 10:45:27.732] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 10:45:27.732] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=53, 实际延迟=98ms
+[2026-01-28 10:45:27.832] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 10:45:27.832] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 10:45:27.832] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 10:45:27.832] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 10:45:27.832] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 10:45:27.832] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 10:45:27.832] [INFO] 任务完成，结果类型: map[string]string
+[2026-01-28 10:53:04.711] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 10:53:04.737] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080] random 100 5 true}
+[2026-01-28 10:53:04.737] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=81ms
+[2026-01-28 10:53:04.819] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 10:53:04.819] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 10:53:04.819] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 10:53:04.819] [INFO] ICMP Worker 2: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 10:53:04.819] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 10:53:04.921] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 10:53:04.921] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 10:53:04.921] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 10:53:04.921] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 10:53:04.921] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 10:53:05.022] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 10:53:05.022] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 10:53:05.022] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 10:53:05.022] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 10:53:05.022] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 10:53:05.022] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 10:53:05.022] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 10:53:05.022] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 10:53:05.022] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=103ms
+[2026-01-28 10:53:05.126] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 10:53:05.126] [INFO] 待扫描端口列表: [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080]
+[2026-01-28 10:53:05.126] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 10:53:05.126] [INFO] 扫描协议: TCP=true, UDP=true
+[2026-01-28 10:53:05.229] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 10:53:05.229] [INFO] 192.168.167.238:25 TCP端口开放
+[2026-01-28 10:53:05.229] [INFO] 192.168.47.128:143 TCP端口开放
+[2026-01-28 10:53:05.229] [INFO] 192.168.167.238:110 TCP端口开放
+[2026-01-28 10:53:05.229] [INFO] 192.168.167.238:143 TCP端口开放
+[2026-01-28 10:53:05.232] [INFO] 192.168.47.128:25 TCP端口开放
+[2026-01-28 10:53:05.233] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 10:53:05.233] [INFO] 192.168.167.29:110 TCP端口开放
+[2026-01-28 10:53:05.233] [INFO] 192.168.167.29:445 TCP端口开放
+[2026-01-28 10:53:05.234] [INFO] 192.168.167.29:139 TCP端口开放
+[2026-01-28 10:53:05.234] [INFO] 192.168.167.29:143 TCP端口开放
+[2026-01-28 10:53:05.234] [INFO] 192.168.167.29:135 TCP端口开放
+[2026-01-28 10:53:05.235] [INFO] 192.168.167.29:25 TCP端口开放
+[2026-01-28 10:53:05.235] [INFO] 192.168.47.128:110 TCP端口开放
+[2026-01-28 10:53:05.236] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 10:53:05.241] [INFO] 192.168.167.238:53 TCP端口开放
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:53 TCP端口关闭或无法连接: dial tcp 192.168.167.29:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.29:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:995 TCP端口关闭或无法连接: dial tcp 192.168.167.29:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:993 TCP端口关闭或无法连接: dial tcp 192.168.167.29:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.47.128:139 TCP端口关闭或无法连接: dial tcp 192.168.47.128:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.276] [INFO] 192.168.167.29:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.29:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.277] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.277] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.277] [INFO] 192.168.47.128:445 TCP端口关闭或无法连接: dial tcp 192.168.47.128:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.277] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.290] [INFO] 192.168.47.128:53 TCP端口关闭或无法连接: dial tcp 192.168.47.128:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.290] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.291] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.291] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.291] [INFO] 192.168.47.128:135 TCP端口关闭或无法连接: dial tcp 192.168.47.128:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:5900 TCP端口关闭或无法连接: dial tcp 192.168.47.128:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:1723 TCP端口关闭或无法连接: dial tcp 192.168.47.128:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:995 TCP端口关闭或无法连接: dial tcp 192.168.47.128:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.366] [INFO] 192.168.47.128:993 TCP端口关闭或无法连接: dial tcp 192.168.47.128:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.369] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.369] [INFO] 192.168.167.238:135 TCP端口关闭或无法连接: dial tcp 192.168.167.238:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.369] [INFO] 192.168.167.238:445 TCP端口关闭或无法连接: dial tcp 192.168.167.238:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:995 TCP端口关闭或无法连接: dial tcp 192.168.167.238:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.238:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:139 TCP端口关闭或无法连接: dial tcp 192.168.167.238:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.372] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:993 TCP端口关闭或无法连接: dial tcp 192.168.167.238:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.238:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.373] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 10:53:07.422] [INFO] 192.168.167.238:53 UDP端口开放，响应: 000081800001000200000000076578616d706c6503636f6d0000010001c00c0001000100000258000468121b78c00c0001000100000258000468121a78
+[2026-01-28 10:53:10.334] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.334] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.334] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.335] [INFO] 192.168.167.29:53 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.335] [INFO] 192.168.167.29:25 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.335] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.335] [INFO] 192.168.167.29:110 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.336] [INFO] 192.168.167.29:135 UDP端口可能开放（无响应）
+[2026-01-28 10:53:10.341] [INFO] 192.168.167.29:139 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:143 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:445 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:995 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:993 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.377] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.378] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.378] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.378] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.378] [INFO] 192.168.167.238:25 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.390] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.391] [INFO] 192.168.167.238:135 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.391] [INFO] 192.168.167.238:110 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.391] [INFO] 192.168.167.238:139 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.466] [INFO] 192.168.167.238:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.466] [INFO] 192.168.167.238:995 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.466] [INFO] 192.168.167.238:445 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.466] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.466] [INFO] 192.168.167.238:993 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.467] [INFO] 192.168.167.238:143 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.467] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.470] [INFO] 192.168.167.238:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.470] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.470] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:53 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:110 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:25 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.473] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.474] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.474] [INFO] 192.168.47.128:139 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.474] [INFO] 192.168.47.128:445 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.474] [INFO] 192.168.47.128:135 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.474] [INFO] 192.168.47.128:143 UDP端口可能开放（无响应）
+[2026-01-28 10:53:12.522] [INFO] 192.168.47.128:993 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.435] [INFO] 192.168.47.128:995 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.435] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.435] [INFO] 192.168.47.128:1723 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.436] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.436] [INFO] 192.168.47.128:5900 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.436] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 10:53:15.436] [INFO] 综合端口扫描结束
+[2026-01-28 10:53:15.436] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 10:53:15.436] [INFO] 端口扫描结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 10:53:15.437] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=99ms
+[2026-01-28 10:53:15.536] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 10:53:15.536] [INFO] 开始扫描主机192.168.47.128的服务，开放端口数: 3
+[2026-01-28 10:53:17.537] [INFO] 192.168.47.128:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:19.580] [INFO] 192.168.47.128:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:21.581] [INFO] 192.168.47.128:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:21.581] [INFO] 192.168.47.128 服务扫描完成
+[2026-01-28 10:53:21.581] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 9
+[2026-01-28 10:53:21.582] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 10:53:21.582] [INFO] 192.168.167.29:3306 识别为: MySQL Database (置信度: 85%)
+[2026-01-28 10:53:23.583] [INFO] 192.168.167.29:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:25.584] [INFO] 192.168.167.29:445 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:27.585] [INFO] 192.168.167.29:139 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:29.586] [INFO] 192.168.167.29:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:31.587] [INFO] 192.168.167.29:135 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:33.621] [INFO] 192.168.167.29:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:33.624] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 10:53:33.624] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 10:53:33.624] [INFO] 开始扫描主机192.168.167.238的服务，开放端口数: 4
+[2026-01-28 10:53:35.729] [INFO] 192.168.167.238:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:37.730] [INFO] 192.168.167.238:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:39.731] [INFO] 192.168.167.238:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 10:53:39.734] [INFO] 192.168.167.238:53 识别为: DNS Server (置信度: 95%)
+[2026-01-28 10:53:39.734] [INFO] 192.168.167.238 服务扫描完成
+[2026-01-28 10:53:39.734] [INFO] 服务扫描结束
+[2026-01-28 10:53:39.734] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 10:53:39.735] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=53, 实际延迟=124ms
+[2026-01-28 10:53:39.860] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 10:53:39.860] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 10:53:39.860] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 10:53:39.860] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 10:53:39.860] [INFO] 开始检测�[2026-01-28 11:01:32.152] [INFO] 程序启动，开始执行网络安全扫描任务
+[2026-01-28 11:01:32.178] [INFO] 用户输入参数: &{[192.168.167.29 192.168.167.238 192.168.47.128] [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080] random 100 5 true}
+[2026-01-28 11:01:32.178] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=50, 实际延迟=87ms
+[2026-01-28 11:01:32.266] [INFO] 主机存活性扫描开始，目标列表: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 11:01:32.266] [INFO] 具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描
+[2026-01-28 11:01:32.266] [INFO] ICMP Worker 4: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.238
+[2026-01-28 11:01:32.266] [INFO] ICMP Worker 0: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.167.29
+[2026-01-28 11:01:32.266] [INFO] ICMP Worker 1: 步骤=0, 延迟类型=constant, 基础值=100ms, 实际延迟=100ms, 目标=192.168.47.128
+[2026-01-28 11:01:32.368] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.29 (重试 1)
+[2026-01-28 11:01:32.368] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 1)
+[2026-01-28 11:01:32.368] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 1)
+[2026-01-28 11:01:32.368] [INFO] Windows原始套接字收到来自 192.168.167.29 的响应，TTL: 128
+[2026-01-28 11:01:32.368] [INFO] ICMP扫描成功 192.168.167.29: 主机在线，TTL=128
+[2026-01-28 11:01:32.469] [INFO] Windows原始套接字: 发送ICMP到 192.168.167.238 (重试 2)
+[2026-01-28 11:01:32.469] [INFO] Windows原始套接字: 发送ICMP到 192.168.47.128 (重试 2)
+[2026-01-28 11:01:32.469] [INFO] Windows原始套接字收到来自 192.168.167.238 的响应，TTL: 64
+[2026-01-28 11:01:32.469] [INFO] ICMP扫描成功 192.168.167.238: 主机在线，TTL=64
+[2026-01-28 11:01:32.469] [INFO] Windows原始套接字收到来自 192.168.47.128 的响应，TTL: 64
+[2026-01-28 11:01:32.469] [INFO] ICMP扫描成功 192.168.47.128: 主机在线，TTL=64
+[2026-01-28 11:01:32.469] [INFO] ICMP扫描完成，发现3个在线主机
+[2026-01-28 11:01:32.469] [INFO] 任务完成，结果类型: scanner.ScanResult
+[2026-01-28 11:01:32.469] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=51, 实际延迟=78ms
+[2026-01-28 11:01:32.548] [INFO] 综合端口扫描开始，待扫描在线主机: [192.168.167.29 192.168.167.238 192.168.47.128]
+[2026-01-28 11:01:32.548] [INFO] 待扫描端口列表: [21 22 23 25 53 80 110 135 139 143 443 445 993 995 1723 3306 3389 5900 8080]
+[2026-01-28 11:01:32.548] [INFO] 延迟配置: 类型=constant, 值=100ms
+[2026-01-28 11:01:32.548] [INFO] 扫描协议: TCP=true, UDP=true
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.238:143 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:139 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:25 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:110 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.47.128:143 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:80 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:21 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.238:25 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.238:110 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:445 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:143 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.47.128:25 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:135 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.47.128:110 TCP端口开放
+[2026-01-28 11:01:32.650] [INFO] 192.168.167.29:3306 TCP端口开放
+[2026-01-28 11:01:32.660] [INFO] 192.168.167.238:53 TCP端口开放
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:443 TCP端口关闭或无法连接: dial tcp 192.168.167.29:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:23 TCP端口关闭或无法连接: dial tcp 192.168.167.29:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.29:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.29:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.29:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:995 TCP端口关闭或无法连接: dial tcp 192.168.167.29:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:22 TCP端口关闭或无法连接: dial tcp 192.168.167.29:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:993 TCP端口关闭或无法连接: dial tcp 192.168.167.29:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:53 TCP端口关闭或无法连接: dial tcp 192.168.167.29:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.167.29:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.29:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:445 TCP端口关闭或无法连接: dial tcp 192.168.47.128:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:21 TCP端口关闭或无法连接: dial tcp 192.168.47.128:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:22 TCP端口关闭或无法连接: dial tcp 192.168.47.128:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:135 TCP端口关闭或无法连接: dial tcp 192.168.47.128:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:443 TCP端口关闭或无法连接: dial tcp 192.168.47.128:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:23 TCP端口关闭或无法连接: dial tcp 192.168.47.128:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:80 TCP端口关闭或无法连接: dial tcp 192.168.47.128:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:53 TCP端口关闭或无法连接: dial tcp 192.168.47.128:53: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.680] [INFO] 192.168.47.128:139 TCP端口关闭或无法连接: dial tcp 192.168.47.128:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:995 TCP端口关闭或无法连接: dial tcp 192.168.47.128:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:3389 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:3306 TCP端口关闭或无法连接: dial tcp 192.168.47.128:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:8080 TCP端口关闭或无法连接: dial tcp 192.168.47.128:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:5900 TCP端口关闭或无法连接: dial tcp 192.168.47.128:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:993 TCP端口关闭或无法连接: dial tcp 192.168.47.128:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.789] [INFO] 192.168.47.128:1723 TCP端口关闭或无法连接: dial tcp 192.168.47.128:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:445 TCP端口关闭或无法连接: dial tcp 192.168.167.238:445: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:135 TCP端口关闭或无法连接: dial tcp 192.168.167.238:135: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:80 TCP端口关闭或无法连接: dial tcp 192.168.167.238:80: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:21 TCP端口关闭或无法连接: dial tcp 192.168.167.238:21: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:443 TCP端口关闭或无法连接: dial tcp 192.168.167.238:443: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:22 TCP端口关闭或无法连接: dial tcp 192.168.167.238:22: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.803] [INFO] 192.168.167.238:3306 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3306: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:8080 TCP端口关闭或无法连接: dial tcp 192.168.167.238:8080: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:5900 TCP端口关闭或无法连接: dial tcp 192.168.167.238:5900: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:993 TCP端口关闭或无法连接: dial tcp 192.168.167.238:993: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:139 TCP端口关闭或无法连接: dial tcp 192.168.167.238:139: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:995 TCP端口关闭或无法连接: dial tcp 192.168.167.238:995: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:1723 TCP端口关闭或无法连接: dial tcp 192.168.167.238:1723: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:23 TCP端口关闭或无法连接: dial tcp 192.168.167.238:23: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.804] [INFO] 192.168.167.238:3389 TCP端口关闭或无法连接: dial tcp 192.168.167.238:3389: connectex: No connection could be made because the target machine actively refused it.
+[2026-01-28 11:01:34.833] [INFO] 192.168.167.238:53 UDP端口开放，响应: 000081800001000200000000076578616d706c6503636f6d0000010001c00c0001000100000258000468121b78c00c0001000100000258000468121a78
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:22 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:80 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:53 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:21 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:135 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.751] [INFO] 192.168.167.29:25 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.752] [INFO] 192.168.167.29:23 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.752] [INFO] 192.168.167.29:110 UDP端口可能开放（无响应）
+[2026-01-28 11:01:37.761] [INFO] 192.168.167.29:139 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:143 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.238:139 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:443 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:5900 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.238:22 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:993 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:1723 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:445 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.238:80 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.29:8080 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.781] [INFO] 192.168.167.238:110 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.29:3389 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.238:23 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.238:25 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.29:995 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.29:3306 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.238:135 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.782] [INFO] 192.168.167.238:21 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:443 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:3306 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:993 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:1723 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:143 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:995 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.890] [INFO] 192.168.167.238:445 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.47.128:21 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.47.128:25 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.167.238:8080 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.167.238:3389 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.167.238:5900 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.47.128:23 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.904] [INFO] 192.168.47.128:22 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:443 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:139 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:110 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:80 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:135 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:53 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:445 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.905] [INFO] 192.168.47.128:143 UDP端口可能开放（无响应）
+[2026-01-28 11:01:39.934] [INFO] 192.168.47.128:993 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:1723 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:8080 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:3306 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:3389 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:995 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 192.168.47.128:5900 UDP端口可能开放（无响应）
+[2026-01-28 11:01:42.852] [INFO] 综合端口扫描结束
+[2026-01-28 11:01:42.852] [INFO] 任务完成，结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 11:01:42.852] [INFO] 端口扫描结果类型: *scanner.ComprehensiveScanResult
+[2026-01-28 11:01:42.853] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=52, 实际延迟=53ms
+[2026-01-28 11:01:42.906] [INFO] 服务扫描开始 - 使用指纹识别模式
+[2026-01-28 11:01:42.906] [INFO] 开始扫描主机192.168.167.238的服务，开放端口数: 4
+[2026-01-28 11:01:44.907] [INFO] 192.168.167.238:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:47.041] [INFO] 192.168.167.238:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:49.042] [INFO] 192.168.167.238:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:49.052] [INFO] 192.168.167.238:53 识别为: DNS Server (置信度: 95%)
+[2026-01-28 11:01:49.052] [INFO] 192.168.167.238 服务扫描完成
+[2026-01-28 11:01:49.052] [INFO] 开始扫描主机192.168.167.29的服务，开放端口数: 9
+[2026-01-28 11:01:51.053] [INFO] 192.168.167.29:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:51.078] [INFO] 192.168.167.29:80 识别为: HTTP Server (置信度: 85%)
+[2026-01-28 11:01:51.079] [INFO] 192.168.167.29:21 识别为: FileZilla Server (置信度: 90%)
+[2026-01-28 11:01:53.080] [INFO] 192.168.167.29:139 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:55.114] [INFO] 192.168.167.29:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:57.116] [INFO] 192.168.167.29:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:01:59.116] [INFO] 192.168.167.29:445 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:01.118] [INFO] 192.168.167.29:135 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:01.119] [INFO] 192.168.167.29:3306 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:01.119] [INFO] 192.168.167.29 服务扫描完成
+[2026-01-28 11:02:01.119] [INFO] 开始扫描主机192.168.47.128的服务，开放端口数: 3
+[2026-01-28 11:02:03.120] [INFO] 192.168.47.128:143 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:05.175] [INFO] 192.168.47.128:25 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:07.176] [INFO] 192.168.47.128:110 识别为: Unknown (no banner) (置信度: 0%)
+[2026-01-28 11:02:07.176] [INFO] 192.168.47.128 服务扫描完成
+[2026-01-28 11:02:07.176] [INFO] 服务扫描结束
+[2026-01-28 11:02:07.176] [INFO] 任务完成，结果类型: map[string]map[int]*scanner.ServiceFingerprint
+[2026-01-28 11:02:07.177] [INFO] 任务调度: 延迟类型=random, 基础值=100ms, 步长=53, 实际延迟=115ms
+[2026-01-28 11:02:07.292] [INFO] 开始检测主机 192.168.167.29 的操作系统
+[2026-01-28 11:02:07.292] [INFO] 主机 192.168.167.29 操作系统检测结果: Windows
+[2026-01-28 11:02:07.292] [INFO] 开始检测主机 192.168.167.238 的操作系统
+[2026-01-28 11:02:07.292] [INFO] 主机 192.168.167.238 操作系统检测结果: Linux/Unix
+[2026-01-28 11:02:07.292] [INFO] 开始检测主机 192.168.47.128 的操作系统
+[2026-01-28 11:02:07.292] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 11:02:07.292] [INFO] 任务完成，结果类型: map[string]string
+��机 192.168.47.128 的操作系统
+[2026-01-28 10:53:39.860] [INFO] 主机 192.168.47.128 操作系统检测结果: Linux/Unix
+[2026-01-28 10:53:39.860] [INFO] 任务完成，结果类型: map[string]string

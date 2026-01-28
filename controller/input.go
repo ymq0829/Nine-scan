@@ -14,7 +14,6 @@ type ScanParams struct {
 	DelayType  DelayType // 延迟类型
 	DelayValue int       // 延迟基础值（ms）
 	Timeout    int       // TCP连接超时时间（秒）
-	EnableSMB  bool      // 启用SMB扫描
 	EnableUDP  bool      // 启用UDP扫描
 }
 
@@ -22,12 +21,11 @@ type ScanParams struct {
 func ParseInput() (*ScanParams, error) {
 	// 定义命令行参数
 	targetsFlag := flag.String("targets", "", "目标主机列表，支持逗号分隔（如192.168.1.1,192.168.1.2）或网段（192.168.1.1-254）")
-	portsFlag := flag.String("ports", "21-23,80,443,3389,3306,8080", "扫描端口列表，逗号分隔（如80,443,22）或范围（21-23）")
+	portsFlag := flag.String("ports", "21,22,23,25,53,80,110,135,139,143,443,445,993,995,1723,3306,3389,5900,8080", "扫描端口列表，逗号分隔（如80,443,22）或范围（21-23）")
 	delayTypeFlag := flag.String("delay", "constant", "延迟类型：constant/random/function1/function2/function3/function4")
 	delayValFlag := flag.Int("delayVal", 100, "延迟基础值（毫秒）")
 	timeoutFlag := flag.Int("timeout", 5, "TCP连接超时时间（秒）")
-	enableSMBFlag := flag.Bool("smb", false, "启用SMB扫描（默认禁用）")
-	enableUDPFlag := flag.Bool("udp", false, "启用UDP扫描（默认禁用）")
+	enableUDPFlag := flag.Bool("udp", true, "启用UDP扫描（默认启用）")
 
 	// 解析参数
 	flag.Parse()
@@ -116,7 +114,6 @@ func ParseInput() (*ScanParams, error) {
 		DelayType:  delayType,
 		DelayValue: *delayValFlag,
 		Timeout:    *timeoutFlag,
-		EnableSMB:  *enableSMBFlag,
 		EnableUDP:  *enableUDPFlag,
 	}, nil
 }

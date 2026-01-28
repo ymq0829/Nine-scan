@@ -1,24 +1,42 @@
 ==================== 扫描结果汇总 ====================
-扫描时间: 2026-01-27 17:26:02
+扫描时间: 2026-01-28 11:02:07
 在线主机数量: 3
 
 --- 主机详情 ---
 
 主机: 192.168.167.29
   操作系统: Windows
-  开放端口: [25]
+  开放端口:
+    TCP: [110 80 21 139 25 143 445 135 3306]
   服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
+    端口 25: Unknown (no banner) [0%]
+    端口 143: Unknown (no banner) [0%]
+    端口 3306: Unknown (no banner) [0%]
+    端口 139: Unknown (no banner) [0%]
+    端口 445: Unknown (no banner) [0%]
+    端口 135: Unknown (no banner) [0%]
+    端口 110: Unknown (no banner) [0%]
+    端口 80: HTTP Server [85%]
+        Banner: HTTP/1.1 200 OK
+    端口 21: FileZilla Server [90%]
 
 主机: 192.168.167.238
   操作系统: Linux/Unix
-  开放端口: [25]
+  开放端口:
+    TCP: [143 25 110 53]
+    UDP: [53]
   服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
+    端口 53: DNS Server [95%]
+    端口 143: Unknown (no banner) [0%]
+    端口 25: Unknown (no banner) [0%]
+    端口 110: Unknown (no banner) [0%]
 
 主机: 192.168.47.128
   操作系统: Linux/Unix
-  开放端口: [25]
+  开放端口:
+    TCP: [143 25 110]
   服务信息:
-    端口 25: SMTP (Simple Mail Transfer Protocol)
+    端口 143: Unknown (no banner) [0%]
+    端口 25: Unknown (no banner) [0%]
+    端口 110: Unknown (no banner) [0%]
 =====================================================

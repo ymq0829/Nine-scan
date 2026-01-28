@@ -245,7 +245,13 @@ func runCommandLineMode() {
 
 	// 2. 初始化日志
 	logger := controller.NewLogger("scan.log")
-	defer logger.Close()
+	// 确保在所有任务完成后关闭日志
+	defer func() {
+		// 等待日志缓冲区刷新
+		time.Sleep(200 * time.Millisecond)
+		logger.Close()
+	}()
+
 	logger.Log("程序启动，开始执行网络安全扫描任务")
 	logger.Logf("用户输入参数: %v", params)
 
@@ -298,33 +304,17 @@ func runCommandLineMode() {
 		}
 		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 
-		// 打印TTL信息用于调试
-		for _, hostInfo := range aliveHosts {
-			if hostInfo.TTL > 0 {
-				fmt.Printf("主机 %s TTL: %d\n", hostInfo.Host, hostInfo.TTL)
-			}
-		}
-	} else if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
-		// 兼容旧版本（返回[]HostInfo的情况）
-		aliveHosts = hostInfos
-		// 转换为字符串切片
-		for _, hostInfo := range aliveHosts {
-			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
-		}
-		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
+		// 删除TTL信息调试输出（第310-316行）
+		// for _, hostInfo := range aliveHosts {
+		// 	if hostInfo.TTL > 0 {
+		// 		fmt.Printf("主机 %s TTL: %d\n", hostInfo.Host, hostInfo.TTL)
+		// 	}
+		// }
 	} else {
-		// 兼容旧版本（返回[]string的情况）
-		if strHosts, ok := hosts.([]string); ok {
-			for _, host := range strHosts {
-				aliveHosts = append(aliveHosts, scanner.HostInfo{
-					Host:  host,
-					Alive: true,
-					TTL:   0, // 旧版本无法获取TTL
-				})
-				aliveHostStrings = append(aliveHostStrings, host)
-			}
-		}
-		fmt.Printf("\n%s完成，发现 %d 个存活主机（使用兼容模式）\n", scanMethod, len(aliveHosts))
+		// 如果返回了意外的类型，记录错误
+		logger.Errorf("扫描器返回了意外的类型: %T", hosts)
+		fmt.Printf("扫描结果处理失败，返回了意外的类型\n")
+		return
 	}
 
 	// 2. 端口扫描
@@ -332,13 +322,29 @@ func runCommandLineMode() {
 	fmt.Printf("端口扫描进度: 0/%d\n", totalPortTasks)
 
 	ports := scheduler.Schedule(func() interface{} {
-		result, _ := portScanner.ScanHosts(aliveHostStrings)
+		result, err := portScanner.ScanHosts(aliveHostStrings)
+		if err != nil {
+			logger.Errorf("端口扫描失败: %v", err)
+			return &scanner.ComprehensiveScanResult{
+				TCPPorts: make(map[string][]int),
+				UDPInfo:  make(map[string]map[string]interface{}),
+			}
+		}
 		return result
 	})
-	openPorts, ok := ports.(map[string][]int)
-	if !ok {
-		logger.Errorf("端口扫描结果类型断言失败")
-		fmt.Println("端口扫描结果处理失败")
+
+	// 处理综合扫描结果
+	var openPorts map[string][]int
+	var comprehensiveResult *scanner.ComprehensiveScanResult
+
+	if result, ok := ports.(*scanner.ComprehensiveScanResult); ok {
+		openPorts = result.TCPPorts
+		comprehensiveResult = result // 保存完整结果用于UDP信息
+		logger.Log("端口扫描结果类型: *scanner.ComprehensiveScanResult")
+	} else {
+		// 如果返回了意外的类型，记录错误
+		logger.Errorf("端口扫描器返回了意外的类型: %T", ports)
+		fmt.Println("端口扫描结果处理失败，返回了意外的类型")
 		return
 	}
 
@@ -349,7 +355,11 @@ func runCommandLineMode() {
 
 	serviceScanner := scanner.NewServiceScanner(openPorts, logger)
 	services := scheduler.Schedule(func() interface{} {
-		result, _ := serviceScanner.Scan()
+		result, err := serviceScanner.Scan()
+		if err != nil {
+			logger.Errorf("服务扫描失败: %v", err)
+			return make(map[string]map[int]*scanner.ServiceFingerprint)
+		}
 		return result
 	})
 	serviceInfo, ok := services.(map[string]map[int]*scanner.ServiceFingerprint)
@@ -362,64 +372,43 @@ func runCommandLineMode() {
 
 	// 4. 操作系统识别
 	fmt.Println("开始操作系统检测...")
-	osResults, err := osDetector.DetectWithTTL(aliveHosts)
-	if err != nil {
-		logger.Log(fmt.Sprintf("操作系统检测失败: %v", err))
-		return
-	}
-
-	// 类型断言：将 interface{} 转换为 map[string]string
+	osResults := scheduler.Schedule(func() interface{} {
+		result, err := osDetector.DetectWithTTL(aliveHosts)
+		if err != nil {
+			logger.Log(fmt.Sprintf("操作系统检测失败: %v", err))
+			return make(map[string]string)
+		}
+		return result
+	})
 	osInfo, ok := osResults.(map[string]string)
 	if !ok {
 		logger.Log("操作系统检测结果类型断言失败")
 		osInfo = make(map[string]string)
 	}
 
-	// 打印操作系统检测结果
-	for host, osType := range osInfo {
-		fmt.Printf("主机 %s 操作系统: %s\n", host, osType)
-	}
+	// 删除冗余的操作系统信息输出（第365-368行）
+	// for host, osType := range osInfo {
+	// 	fmt.Printf("主机 %s 操作系统: %s\n", host, osType)
+	// }
 
 	if len(aliveHostStrings) == 0 {
 		fmt.Println("没有发现存活主机，扫描结束")
 		return
 	}
 
-	// 5. SMB/UDP扫描（如果启用）
-	var smbUDPInfo interface{}
-	if params.EnableSMB || params.EnableUDP {
-		fmt.Println("SMB/UDP扫描: 进行中...")
-
-		smbUDPConfig := &scanner.SMBUDPConfig{
-			Targets:   aliveHostStrings,
-			Ports:     params.Ports,
-			Timeout:   time.Duration(params.Timeout) * time.Second,
-			Logger:    logger,
-			EnableSMB: params.EnableSMB,
-			EnableUDP: params.EnableUDP,
-		}
-		smbUDPDetector := scanner.NewSMBUDPDetector(smbUDPConfig)
-
-		smbUDPInfo, err = smbUDPDetector.Scan()
-		if err != nil {
-			logger.Errorf("SMB/UDP扫描失败: %v", err)
-			smbUDPInfo = make(map[string]interface{})
-		}
-
-		fmt.Println("SMB/UDP扫描: 完成")
-	}
-
-	// 6. 显示结果
+	// 5. 显示结果
 	result := output.NewResult(aliveHostStrings, openPorts, osInfo, serviceInfo)
-	if smbUDPInfo != nil {
-		result.SetSMBUDPInfo(smbUDPInfo)
+
+	// 统一处理UDP扫描结果
+	if comprehensiveResult != nil && len(comprehensiveResult.UDPInfo) > 0 {
+		result.SetUDPInfo(comprehensiveResult.UDPInfo)
 	}
 
 	// 在命令行模式下直接打印结果
 	fmt.Println("\n=== 扫描结果 ===")
 	result.Print()
 
-	// 7. 保存结果
+	// 6. 保存结果
 	if err := result.SaveToFile("scan_result.txt"); err != nil {
 		logger.Errorf("扫描结果保存失败: %v", err)
 		fmt.Printf("扫描结果保存失败: %v\n", err)
@@ -428,13 +417,35 @@ func runCommandLineMode() {
 	}
 
 	fmt.Println("\n扫描完成！")
+
+	// 新增：等待用户按键后再退出
+	waitForUserInput()
+}
+
+// waitForUserInput 等待用户按键
+func waitForUserInput() {
+	fmt.Println("\n按任意键退出程序...")
+
+	// 创建读取器
+	reader := bufio.NewReader(os.Stdin)
+
+	// 读取单个字符（不显示输入）
+	_, _ = reader.ReadByte()
+
+	fmt.Println("程序退出")
 }
 
 // performScan 执行扫描任务（交互模式）
 func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	// 初始化日志
 	logger := controller.NewLogger("scan.log")
-	defer logger.Close()
+	// 确保在所有任务完成后关闭日志
+	defer func() {
+		// 等待日志缓冲区刷新
+		time.Sleep(200 * time.Millisecond)
+		logger.Close()
+	}()
+
 	logger.Log("程序启动，开始执行网络安全扫描任务")
 	logger.Logf("用户输入参数: %v", params)
 
@@ -489,27 +500,11 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
 		}
 		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
-	} else if hostInfos, ok := hosts.([]scanner.HostInfo); ok {
-		// 兼容旧版本（返回[]HostInfo的情况）
-		aliveHosts = hostInfos
-		// 转换为字符串切片
-		for _, hostInfo := range aliveHosts {
-			aliveHostStrings = append(aliveHostStrings, hostInfo.Host)
-		}
-		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 	} else {
-		// 兼容旧版本（返回[]string的情况）
-		if strHosts, ok := hosts.([]string); ok {
-			for _, host := range strHosts {
-				aliveHosts = append(aliveHosts, scanner.HostInfo{
-					Host:  host,
-					Alive: true,
-					TTL:   0,
-				})
-				aliveHostStrings = append(aliveHostStrings, host)
-			}
-		}
-		fmt.Printf("\n%s完成，发现 %d 个存活主机（使用兼容模式）\n", scanMethod, len(aliveHosts))
+		// 如果返回了意外的类型，记录错误
+		logger.Log(fmt.Sprintf("扫描器返回了意外的类型: %T", hosts))
+		fmt.Printf("扫描结果处理失败，返回了意外的类型\n")
+		return
 	}
 
 	if len(aliveHosts) == 0 {
@@ -525,17 +520,27 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 		result, err := portScanner.ScanHosts(aliveHostStrings)
 		if err != nil {
 			logger.Errorf("端口扫描失败: %v", err)
-			return make(map[string][]int)
+			return &scanner.ComprehensiveScanResult{
+				TCPPorts: make(map[string][]int),
+				UDPInfo:  make(map[string]map[string]interface{}),
+			}
 		}
 		return result
 	})
-	openPorts, ok := ports.(map[string][]int)
-	if !ok {
-		logger.Errorf("端口扫描结果类型断言失败")
-		fmt.Println("端口扫描结果处理失败")
+
+	// 处理综合扫描结果
+	var openPorts map[string][]int
+	var comprehensiveResult *scanner.ComprehensiveScanResult
+
+	if result, ok := ports.(*scanner.ComprehensiveScanResult); ok {
+		openPorts = result.TCPPorts
+		logger.Log("端口扫描结果类型: *scanner.ComprehensiveScanResult")
+	} else {
+		// 如果返回了意外的类型，记录错误
+		logger.Errorf("端口扫描器返回了意外的类型: %T", ports)
+		fmt.Println("端口扫描结果处理失败，返回了意外的类型")
 		return
 	}
-
 	ui.ShowScanProgress("端口扫描", totalPortTasks, totalPortTasks)
 
 	// 3. 服务扫描（使用调度器）
@@ -575,38 +580,14 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	}
 	ui.ShowScanProgress("操作系统检测", 1, 1)
 
-	// 5. SMB/UDP扫描（如果启用，使用调度器）
-	var smbUDPInfo interface{}
-	if params.EnableSMB || params.EnableUDP {
-		ui.ShowScanProgress("SMB/UDP扫描", 0, 0)
-
-		smbUDPConfig := &scanner.SMBUDPConfig{
-			Targets:   aliveHostStrings,
-			Ports:     params.Ports,
-			Timeout:   time.Duration(params.Timeout) * time.Second,
-			Logger:    logger,
-			EnableSMB: params.EnableSMB,
-			EnableUDP: params.EnableUDP,
-		}
-		smbUDPDetector := scanner.NewSMBUDPDetector(smbUDPConfig)
-
-		smbUDPInfo = scheduler.Schedule(func() interface{} {
-			result, err := smbUDPDetector.Scan()
-			if err != nil {
-				logger.Errorf("SMB/UDP扫描失败: %v", err)
-				return make(map[string]interface{})
-			}
-			return result
-		})
-
-		ui.ShowScanProgress("SMB/UDP扫描", 1, 1)
-	}
-
-	// 6. 显示结果
+	// 5. 显示结果
 	result := output.NewResult(aliveHostStrings, openPorts, osInfo, serviceInfo)
-	if smbUDPInfo != nil {
-		result.SetSMBUDPInfo(smbUDPInfo)
+
+	// 设置UDP扫描结果（移除SMB相关逻辑）
+	if comprehensiveResult != nil && len(comprehensiveResult.UDPInfo) > 0 {
+		result.SetUDPInfo(comprehensiveResult.UDPInfo)
 	}
+
 	ui.ShowScanResult(result)
 
 	// 7. 保存结果

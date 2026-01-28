@@ -96,24 +96,6 @@ func (d *OSDetector) detectOSByTTL(ttl int) string {
 	}
 }
 
-// 添加TTL衰减计算功能
-func (d *OSDetector) estimateOriginalTTL(ttl int) int {
-	// 根据接收到的TTL值估计原始TTL
-	if ttl <= 30 {
-		return 64 // 可能是Linux系统经过较多跳
-	} else if ttl <= 64 {
-		return 64 // Linux系统
-	} else if ttl <= 100 {
-		return 128 // Windows系统经过较多跳
-	} else if ttl <= 128 {
-		return 128 // Windows系统
-	} else if ttl <= 200 {
-		return 255 // 某些Unix系统
-	} else {
-		return 255 // 某些网络设备
-	}
-}
-
 // detectOSByTCP 通过TCP连接特征判断操作系统（后备方法）
 func (d *OSDetector) detectOSByTCP(host string) string {
 	// 尝试连接常见端口来判断操作系统特征

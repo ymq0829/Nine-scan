@@ -386,7 +386,6 @@ func SendEchoRequest(target string, config ICMPConfig) (bool, int, error) {
 	if !CheckAdminPrivileges() {
 		return false, -1, fmt.Errorf("需要管理员权限才能使用ICMP原始套接字")
 	}
-
 	// 使用Windows原始套接字进行ICMP扫描
 	alive, ttl, err := sendWithWindowsRawSocket(target, config)
 	if err != nil {
@@ -599,7 +598,7 @@ func (s *ICMPScanner) parseTargets() []string {
 	return targetsToScan
 }
 
-// Scan 探测主机存活性（统一处理ICMP→TCP降级）
+// Scan 探测主机存活性（改进：按目标IP逐个ICMP→TCP降级）
 func (s *ICMPScanner) Scan() (interface{}, error) {
 	targetsToScan := s.parseTargets()
 	s.logger.Log("主机存活性扫描开始，目标列表: " + fmt.Sprintf("%v", targetsToScan))
@@ -609,16 +608,15 @@ func (s *ICMPScanner) Scan() (interface{}, error) {
 		s.progressCallback(0, len(targetsToScan))
 	}
 
-	// 检查管理员权限，决定使用ICMP还是TCP扫描
+	// 改进：检查管理员权限，但按目标IP逐个处理
 	var aliveHosts []HostInfo
 	var scanMethod string
 
 	if CheckAdminPrivileges() {
-		s.logger.Log("具有管理员权限，尝试使用ICMP扫描")
-		aliveHosts = s.scanWithICMP(targetsToScan)
-		scanMethod = ScanMethodICMP
+		s.logger.Log("具有管理员权限，使用ICMP扫描，失败的目标将回退到TCP扫描")
+		aliveHosts, scanMethod = s.scanWithICMPAndFallback(targetsToScan)
 	} else {
-		s.logger.Log("无管理员权限，使用TCP扫描")
+		s.logger.Log("无管理员权限，全部使用TCP扫描")
 		aliveHosts = s.scanWithTCP(targetsToScan)
 		scanMethod = ScanMethodTCP
 	}
@@ -630,8 +628,8 @@ func (s *ICMPScanner) Scan() (interface{}, error) {
 	}, nil
 }
 
-// scanWithICMP 使用ICMP进行主机存活性扫描（专注并发和延迟控制）
-func (s *ICMPScanner) scanWithICMP(targets []string) []HostInfo {
+// scanWithICMPAndFallback 使用ICMP扫描，失败的目标回退到TCP扫描（改进：返回扫描方法描述）
+func (s *ICMPScanner) scanWithICMPAndFallback(targets []string) ([]HostInfo, string) {
 	const maxWorkers = 5
 	const globalTimeout = 30 * time.Second
 
@@ -640,13 +638,16 @@ func (s *ICMPScanner) scanWithICMP(targets []string) []HostInfo {
 	results := make(chan HostInfo, totalTargets)
 	var aliveHosts []HostInfo
 
+	// 跟踪是否发生了回退
+	fallbackOccurred := false
+
 	// context 用于取消 worker
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	var wg sync.WaitGroup
 
-	// worker 函数，专注并发和延迟控制
+	// worker 函数，支持ICMP失败后回退到TCP
 	worker := func(id int) {
 		defer wg.Done()
 		step := 0
@@ -666,16 +667,43 @@ func (s *ICMPScanner) scanWithICMP(targets []string) []HostInfo {
 					time.Sleep(delay)
 				}
 
-				// 调用独立函数进行ICMP扫描
+				// 首先尝试ICMP扫描
 				alive, ttl, err := SendEchoRequest(target, s.config)
 				if err != nil {
-					s.logger.Logf("ICMP扫描失败 %s: %v", target, err)
-					ttl = -1
-				}
-				if alive {
+					// 详细记录ICMP失败原因
+					s.logger.Logf("ICMP扫描失败 %s: %v，将尝试TCP回退扫描", target, err)
+
+					// ICMP失败，回退到TCP扫描
+					tcpAlive, tcpErr := s.fallbackToTCP(target)
+					if tcpErr != nil {
+						s.logger.Logf("TCP回退扫描失败 %s: %v", target, tcpErr)
+						results <- HostInfo{Host: target, Alive: false, TTL: -1}
+					} else if tcpAlive {
+						s.logger.Logf("TCP回退扫描成功 %s: 主机在线", target)
+						results <- HostInfo{Host: target, Alive: true, TTL: -1}
+						fallbackOccurred = true
+					} else {
+						s.logger.Logf("TCP回退扫描 %s: 主机不在线", target)
+						results <- HostInfo{Host: target, Alive: false, TTL: -1}
+					}
+				} else if alive {
+					s.logger.Logf("ICMP扫描成功 %s: 主机在线，TTL=%d", target, ttl)
 					results <- HostInfo{Host: target, Alive: true, TTL: ttl}
 				} else {
-					results <- HostInfo{}
+					s.logger.Logf("ICMP扫描 %s: 主机不在线", target)
+					// ICMP扫描失败但无错误（如超时），也回退到TCP扫描
+					tcpAlive, tcpErr := s.fallbackToTCP(target)
+					if tcpErr != nil {
+						s.logger.Logf("TCP回退扫描失败 %s: %v", target, tcpErr)
+						results <- HostInfo{Host: target, Alive: false, TTL: -1}
+					} else if tcpAlive {
+						s.logger.Logf("TCP回退扫描成功 %s: 主机在线", target)
+						results <- HostInfo{Host: target, Alive: true, TTL: -1}
+						fallbackOccurred = true
+					} else {
+						s.logger.Logf("TCP回退扫描 %s: 主机不在线", target)
+						results <- HostInfo{Host: target, Alive: false, TTL: -1}
+					}
 				}
 				step++
 			}
@@ -729,7 +757,7 @@ collectLoop:
 				break collectLoop
 			}
 		case <-timer.C:
-			s.logger.Logf("ICMP扫描超时，已完成 %d/%d 个目标", completed, totalTargets)
+			s.logger.Logf("扫描超时，已完成 %d/%d 个目标", completed, totalTargets)
 			remaining := totalTargets - completed
 			for j := 0; j < remaining; j++ {
 				completed++
@@ -741,7 +769,32 @@ collectLoop:
 		}
 	}
 
-	return aliveHosts
+	// 根据是否发生回退来设置扫描方法描述
+	scanMethod := ScanMethodICMP
+	if fallbackOccurred {
+		scanMethod = ScanMethodICMP + "（部分回退到TCP）"
+	}
+
+	return aliveHosts, scanMethod
+}
+
+// fallbackToTCP 单个目标的TCP回退扫描（新增方法）
+func (s *ICMPScanner) fallbackToTCP(target string) (bool, error) {
+	// 使用常见的TCP端口进行连接测试
+	commonPorts := []int{80, 443, 22, 3389, 21, 23, 25, 53, 110, 143, 445, 3306, 8080}
+
+	for _, port := range commonPorts {
+		addr := net.JoinHostPort(target, fmt.Sprintf("%d", port))
+		conn, err := net.DialTimeout("tcp", addr, s.config.Timeout)
+		if err == nil {
+			conn.Close()
+			return true, nil
+		}
+		// 记录每个端口的连接失败原因（可选，避免日志过多）
+		// s.logger.Logf("TCP回退扫描 %s:%d 连接失败: %v", target, port, err)
+	}
+
+	return false, nil
 }
 
 // scanWithTCP 使用TCP进行主机存活性扫描（降级方案）
@@ -758,8 +811,8 @@ func (s *ICMPScanner) scanWithTCP(targets []string) []HostInfo {
 		portScanner.SetProgressCallback(s.progressCallback)
 	}
 
-	// 执行端口扫描
-	result, err := portScanner.Scan()
+	// 执行端口扫描 - 修复：使用ScanHosts方法替代已删除的Scan方法
+	result, err := portScanner.ScanHosts(targets)
 	if err != nil {
 		s.logger.Logf("TCP扫描失败: %v", err)
 		return []HostInfo{}
@@ -767,8 +820,8 @@ func (s *ICMPScanner) scanWithTCP(targets []string) []HostInfo {
 
 	// 转换结果格式
 	var aliveHosts []HostInfo
-	if openPorts, ok := result.(map[string][]int); ok {
-		for target, ports := range openPorts {
+	if comprehensiveResult, ok := result.(*ComprehensiveScanResult); ok {
+		for target, ports := range comprehensiveResult.TCPPorts {
 			if len(ports) > 0 {
 				aliveHosts = append(aliveHosts, HostInfo{
 					Host:  target,
