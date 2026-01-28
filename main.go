@@ -352,10 +352,10 @@ func runCommandLineMode() {
 		result, _ := serviceScanner.Scan()
 		return result
 	})
-	serviceInfo, ok := services.(map[string]map[int]string)
+	serviceInfo, ok := services.(map[string]map[int]*scanner.ServiceFingerprint)
 	if !ok {
 		logger.Errorf("服务扫描结果类型断言失败")
-		serviceInfo = make(map[string]map[int]string)
+		serviceInfo = make(map[string]map[int]*scanner.ServiceFingerprint)
 	}
 
 	fmt.Println("服务识别: 完成")
@@ -546,14 +546,14 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 		result, err := serviceScanner.Scan()
 		if err != nil {
 			logger.Errorf("服务扫描失败: %v", err)
-			return make(map[string]map[int]string)
+			return make(map[string]map[int]*scanner.ServiceFingerprint)
 		}
 		return result
 	})
-	serviceInfo, ok := services.(map[string]map[int]string)
+	serviceInfo, ok := services.(map[string]map[int]*scanner.ServiceFingerprint)
 	if !ok {
 		logger.Errorf("服务扫描结果类型断言失败")
-		serviceInfo = make(map[string]map[int]string)
+		serviceInfo = make(map[string]map[int]*scanner.ServiceFingerprint)
 	}
 
 	ui.ShowScanProgress("服务识别", 1, 1)

@@ -1,9 +1,0 @@
-[2026-01-21 09:59:39.579] [INFO] TCP端口扫描开始，待扫描在线主机: [127.0.0.1 127.0.0.2]
-[2026-01-21 09:59:39.601] [INFO] 待扫描端口列表: [80 443 22]
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.1:443 端口关闭或无法连接: dial tcp 127.0.0.1:443: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.1:80 端口关闭或无法连接: dial tcp 127.0.0.1:80: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.2:22 端口关闭或无法连接: dial tcp 127.0.0.2:22: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.2:80 端口关闭或无法连接: dial tcp 127.0.0.2:80: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.1:22 端口关闭或无法连接: dial tcp 127.0.0.1:22: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.604] [INFO] 127.0.0.2:443 端口关闭或无法连接: dial tcp 127.0.0.2:443: connectex: No connection could be made because the target machine actively refused it.
-[2026-01-21 09:59:39.605] [INFO] TCP端口扫描结束

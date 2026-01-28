@@ -252,8 +252,8 @@ func (ui *InteractiveUI) ShowScanResult(result *output.Result) {
 			for _, port := range ports {
 				fmt.Printf("  - 端口 %d", port)
 				if services, exists := result.ServiceInfo[host]; exists {
-					if service, exists := services[port]; exists && service != "" {
-						fmt.Printf(" (%s)", service)
+					if service, exists := services[port]; exists && service != nil && service.ServiceName != "" {
+						fmt.Printf(" (%s)", service.ServiceName)
 					}
 				}
 				fmt.Println()

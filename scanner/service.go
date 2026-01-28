@@ -3,7 +3,6 @@ package scanner
 import (
 	"bufio"
 	"net"
-	"strconv"
 	"strings"
 	"time"
 
@@ -12,44 +11,38 @@ import (
 
 // ServiceScanner 服务扫描器
 type ServiceScanner struct {
-	targets map[string][]int   // key: 主机IP, value: 开放端口列表
-	timeout time.Duration      // 连接超时时间
-	logger  *controller.Logger // 新增：日志记录器
+	targets          map[string][]int   // key: 主机IP, value: 开放端口列表
+	timeout          time.Duration      // 连接超时时间
+	logger           *controller.Logger // 新增：日志记录器
+	protocolDetector *ProtocolDetector  // 新增：协议探测器
 }
 
 // NewServiceScanner 初始化服务扫描器
 func NewServiceScanner(openPorts map[string][]int, logger *controller.Logger) *ServiceScanner {
 	return &ServiceScanner{
-		targets: openPorts,
-		timeout: 5 * time.Second, // 5秒超时
-		logger:  logger,
+		targets:          openPorts,
+		timeout:          5 * time.Second, // 5秒超时
+		logger:           logger,
+		protocolDetector: NewProtocolDetector(logger),
 	}
 }
 
 // Scan 扫描开放端口对应的服务类型
 func (s *ServiceScanner) Scan() (interface{}, error) {
-	serviceResult := make(map[string]map[int]string)
-	s.logger.Log("服务扫描开始")
+	serviceResult := make(map[string]map[int]*ServiceFingerprint) // 修改为返回指纹结构体
+	s.logger.Log("服务扫描开始 - 使用指纹识别模式")
 
 	// 遍历每个在线主机及其开放端口
 	for host, ports := range s.targets {
 		s.logger.Logf("开始扫描主机%s的服务，开放端口数: %d", host, len(ports))
-		hostServices := make(map[int]string)
+		hostServices := make(map[int]*ServiceFingerprint)
 		for _, port := range ports {
-			addr := net.JoinHostPort(host, strconv.Itoa(port))
-			// 建立TCP连接
-			conn, err := net.DialTimeout("tcp", addr, s.timeout)
-			if err != nil {
-				hostServices[port] = "Unknown (connection failed)"
-				s.logger.Logf("%s:%d 服务识别失败: %v", host, port, err)
-				continue
-			}
+			// 使用协议探测器进行主动探测
+			fingerprint := s.protocolDetector.DetectService(host, port)
+			hostServices[port] = fingerprint
 
-			// 抓取服务Banner
-			serviceName := s.getServiceBanner(conn, port)
-			hostServices[port] = serviceName
-			s.logger.Logf("%s:%d 识别为: %s", host, port, serviceName)
-			conn.Close() // 立即关闭连接，避免defer在循环中的问题
+			s.logger.Logf("%s:%d 识别为: %s (置信度: %d%%)",
+				host, port, fingerprint.ServiceName, fingerprint.Confidence)
 		}
 		serviceResult[host] = hostServices
 		s.logger.Logf("%s 服务扫描完成", host)
@@ -59,7 +52,7 @@ func (s *ServiceScanner) Scan() (interface{}, error) {
 	return serviceResult, nil
 }
 
-// getServiceBanner 根据连接和端口抓取并识别服务Banner
+// getServiceBanner 根据连接和端口抓取并识别服务Banner（保留向后兼容）
 func (s *ServiceScanner) getServiceBanner(conn net.Conn, port int) string {
 	// 针对常见端口提前预判，提高识别准确率
 	switch port {
@@ -89,8 +82,19 @@ func (s *ServiceScanner) getServiceBanner(conn net.Conn, port int) string {
 	return s.recognizeServiceByBanner(banner, port)
 }
 
-// recognizeServiceByBanner 基于Banner内容和端口识别服务类型
+// recognizeServiceByBanner 基于Banner内容和端口识别服务类型（保留向后兼容）
 func (s *ServiceScanner) recognizeServiceByBanner(banner string, port int) string {
+	// 使用新的指纹匹配功能
+	match := MatchFingerprint(banner, port)
+
+	if match.Confidence >= 80 {
+		if match.Version != "" {
+			return match.Service + " " + match.Version
+		}
+		return match.Service
+	}
+
+	// 回退到原有逻辑
 	switch {
 	case strings.Contains(banner, "SSH") || port == 22:
 		return "SSH (Secure Shell)"
@@ -111,4 +115,19 @@ func (s *ServiceScanner) recognizeServiceByBanner(banner string, port int) strin
 	default:
 		return "Unknown: " + banner
 	}
+}
+
+// GetServiceFingerprint 获取服务的详细指纹信息（新增方法）
+func (s *ServiceScanner) GetServiceFingerprint(host string, port int) *ServiceFingerprint {
+	return s.protocolDetector.DetectService(host, port)
+}
+
+// EnhancedScan 增强扫描模式，返回更详细的信息（新增方法）
+func (s *ServiceScanner) EnhancedScan() (map[string]map[int]*ServiceFingerprint, error) {
+	s.logger.Log("启动增强服务扫描模式")
+	result, err := s.Scan()
+	if err != nil {
+		return nil, err
+	}
+	return result.(map[string]map[int]*ServiceFingerprint), nil
 }
