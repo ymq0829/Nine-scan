@@ -10,12 +10,16 @@ import (
 )
 
 type OSDetector struct {
-	Logger *controller.Logger
+	Logger      *controller.Logger
+	PortScanner *PortScanner
+	ServiceScan *ServiceScanner
 }
 
-func NewOSDetector(logger *controller.Logger) *OSDetector {
+func NewOSDetector(logger *controller.Logger, portScanner *PortScanner, serviceScan *ServiceScanner) *OSDetector {
 	return &OSDetector{
-		Logger: logger,
+		Logger:      logger,
+		PortScanner: portScanner,
+		ServiceScan: serviceScan,
 	}
 }
 
@@ -122,82 +126,126 @@ func (d *OSDetector) detectOSByTCP(host string) string {
 
 // detectOSIntelligently 智能检测操作系统（当TTL未知时使用）
 func (d *OSDetector) detectOSIntelligently(host string) string {
-	// 首先尝试TCP端口检测
+	// 首先尝试使用端口和服务信息检测
+	if d.PortScanner != nil && d.ServiceScan != nil {
+		osByPorts := d.detectOSByPortsAndServices(host)
+		if osByPorts != "Unknown" {
+			return osByPorts + " (端口服务检测)"
+		}
+	}
+
+	// 如果端口服务检测失败，尝试TCP端口检测
 	osByTCP := d.detectOSByTCP(host)
 	if osByTCP != "Unknown" {
-		return osByTCP + " (智能检测)"
+		return osByTCP + " (TCP检测)"
 	}
 
-	// 如果TCP检测失败，使用其他智能方法
-	// 1. 检查是否为本地网络
-	if d.isLocalNetwork(host) {
-		// 本地网络：根据常见配置猜测
-		return "Windows (本地网络猜测)"
-	}
-
-	// 2. 检查是否为知名服务提供商
-	if d.isKnownServiceProvider(host) {
-		// 知名服务提供商通常使用Linux/Unix
-		return "Linux/Unix (服务提供商猜测)"
-	}
-
-	// 3. 默认使用最常见的操作系统
-	return "Linux/Unix (默认猜测)"
+	return "Unknown"
 }
 
-// isLocalNetwork 判断目标是否为本地网络
-func (d *OSDetector) isLocalNetwork(host string) bool {
-	ip := net.ParseIP(host)
-	if ip == nil {
-		return false
+// detectOSByPortsAndServices 通过开放端口和服务信息检测操作系统
+func (d *OSDetector) detectOSByPortsAndServices(host string) string {
+	// 获取开放端口
+	portResult, err := d.PortScanner.ScanHosts([]string{host})
+	if err != nil {
+		d.Logger.Logf("端口扫描失败: %v", err)
+		return "Unknown"
+	}
+	compResult, ok := portResult.(*ComprehensiveScanResult)
+	if !ok {
+		d.Logger.Logf("端口扫描结果类型错误")
+		return "Unknown"
+	}
+	openPorts := compResult.GetOpenPorts(host)
+	if len(openPorts) == 0 {
+		d.Logger.Logf("主机 %s 没有开放端口", host)
+		return "Unknown"
 	}
 
-	// 检查是否为私有IP地址范围
-	privateRanges := []string{
-		"10.0.0.0/8",
-		"172.16.0.0/12",
-		"192.168.0.0/16",
-		"127.0.0.0/8",
+	// 获取服务信息
+	openPortsMap := map[string][]int{host: openPorts}
+	serviceScanner := NewServiceScanner(openPortsMap, d.Logger)
+	serviceResult, err := serviceScanner.Scan()
+	if err != nil {
+		d.Logger.Logf("服务扫描失败: %v", err)
+		return "Unknown"
+	}
+	servResult, ok := serviceResult.(*ServiceScanResult)
+	if !ok {
+		d.Logger.Logf("服务扫描结果类型错误")
+		return "Unknown"
+	}
+	services := servResult.GetServices(host)
+	if len(services) == 0 {
+		d.Logger.Logf("主机 %s 没有检测到服务", host)
+		return "Unknown"
 	}
 
-	for _, cidr := range privateRanges {
-		_, network, err := net.ParseCIDR(cidr)
-		if err == nil && network.Contains(ip) {
-			return true
+	// 分析端口和服务模式
+	windowsPorts := 0
+	linuxPorts := 0
+	networkDevicePorts := 0
+
+	for _, service := range services {
+		// 检查Windows特有服务
+		if strings.Contains(strings.ToLower(service), "netbios") ||
+			strings.Contains(strings.ToLower(service), "microsoft-ds") ||
+			strings.Contains(strings.ToLower(service), "msrpc") ||
+			strings.Contains(strings.ToLower(service), "rdp") {
+			windowsPorts++
+		}
+
+		// 检查Linux特有服务
+		if strings.Contains(strings.ToLower(service), "ssh") ||
+			strings.Contains(strings.ToLower(service), "nfs") ||
+			strings.Contains(strings.ToLower(service), "x11") ||
+			strings.Contains(strings.ToLower(service), "samba") {
+			linuxPorts++
+		}
+
+		// 检查网络设备服务
+		if strings.Contains(strings.ToLower(service), "telnet") ||
+			strings.Contains(strings.ToLower(service), "snmp") ||
+			strings.Contains(strings.ToLower(service), "tftp") {
+			networkDevicePorts++
 		}
 	}
 
-	return false
-}
-
-// isKnownServiceProvider 判断目标是否为知名服务提供商
-func (d *OSDetector) isKnownServiceProvider(host string) bool {
-	// 常见的服务提供商域名或IP范围
-	knownProviders := []string{
-		"8.8.8.8",    // Google DNS
-		"1.1.1.1",    // Cloudflare DNS
-		"baidu.com",  // 百度
-		"google.com", // Google
+	// 根据检测到的服务模式判断操作系统
+	if windowsPorts > linuxPorts && windowsPorts > networkDevicePorts {
+		return "Windows"
+	} else if linuxPorts > windowsPorts && linuxPorts > networkDevicePorts {
+		return "Linux/Unix"
+	} else if networkDevicePorts > windowsPorts && networkDevicePorts > linuxPorts {
+		return "Network Device"
 	}
 
-	// 检查是否为IP地址
-	ip := net.ParseIP(host)
-	if ip != nil {
-		for _, provider := range knownProviders {
-			if providerIP := net.ParseIP(provider); providerIP != nil {
-				if ip.Equal(providerIP) {
-					return true
-				}
-			}
+	// 如果服务模式不明显，检查特定端口的组合
+	hasSMB := false
+	hasRDP := false
+	hasSSH := false
+
+	for port := range services {
+		if port == "445" || port == "139" {
+			hasSMB = true
+		}
+		if port == "3389" {
+			hasRDP = true
+		}
+		if port == "22" {
+			hasSSH = true
 		}
 	}
 
-	// 检查是否为域名
-	for _, provider := range knownProviders {
-		if host == provider || strings.HasSuffix(host, "."+provider) {
-			return true
-		}
+	// 典型Windows模式
+	if hasSMB && hasRDP {
+		return "Windows"
 	}
 
-	return false
+	// 典型Linux模式
+	if hasSSH && !hasSMB && !hasRDP {
+		return "Linux/Unix"
+	}
+
+	return "Unknown"
 }

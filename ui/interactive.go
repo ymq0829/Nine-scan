@@ -244,6 +244,30 @@ func (ui *InteractiveUI) ShowScanResult(result *output.Result) {
 	result.Print()
 }
 
+// AskForSaveFormat 询问保存格式
+func (ui *InteractiveUI) AskForSaveFormat() string {
+	fmt.Println("\n请选择保存格式:")
+	fmt.Println("1. TXT (文本格式)")
+	fmt.Println("2. CSV (逗号分隔值)")
+	fmt.Println("3. TSV (制表符分隔值)")
+	fmt.Println("4. JSON (JavaScript对象表示法)")
+	fmt.Print("请输入选择 (1-4，默认1): ")
+
+	input, _ := ui.reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+
+	switch input {
+	case "2":
+		return "csv"
+	case "3":
+		return "tsv"
+	case "4":
+		return "json"
+	default:
+		return "txt"
+	}
+}
+
 // AskForContinue 询问是否继续
 func (ui *InteractiveUI) AskForContinue() bool {
 	fmt.Print("\n是否继续扫描？(y/n): ")
@@ -279,7 +303,8 @@ func (ui *InteractiveUI) readInputInt() (int, error) {
 
 // ClearScreen 清屏
 func (ui *InteractiveUI) ClearScreen() {
-	fmt.Print("\033[H\033[2J")
+	// Windows兼容的清屏方法
+	fmt.Print("\x1b[2J\x1b[H") // 使用标准ANSI转义序列，兼容现代Windows终端
 }
 
 // WaitForEnter 等待用户按回车

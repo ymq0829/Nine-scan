@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -15,14 +16,6 @@ import (
 
 type Scanner interface {
 	Scan() (interface{}, error)
-}
-
-// 显示简单欢迎信息
-func showSimpleWelcome() {
-	fmt.Println("=====================================================")
-	fmt.Println("             网络安全扫描工具 v1.0")
-	fmt.Println("=====================================================")
-	fmt.Println()
 }
 
 // 显示完整帮助信息
@@ -62,16 +55,6 @@ func showFullHelp() {
 	fmt.Println()
 }
 
-// 检查是否需要显示帮助信息
-func shouldShowHelp() bool {
-	for _, arg := range os.Args[1:] {
-		if arg == "-h" || arg == "-help" || arg == "--help" {
-			return true
-		}
-	}
-	return false
-}
-
 // 检查是否启用交互模式
 func shouldUseInteractiveMode() bool {
 	if len(os.Args) == 1 {
@@ -85,14 +68,6 @@ func shouldUseInteractiveMode() bool {
 	return false
 }
 
-// 显示帮助信息并退出
-func showHelpAndExit() {
-	showFullHelp()
-	fmt.Println("使用 -h 或 --help 查看此帮助信息")
-	fmt.Println("直接运行程序（不提供参数）将进入交互模式")
-	os.Exit(0)
-}
-
 // 询问用户是否继续提权
 func askForElevation() bool {
 	reader := bufio.NewReader(os.Stdin)
@@ -104,12 +79,6 @@ func askForElevation() bool {
 
 // 在main函数中优化扫描流程
 func main() {
-	// 检查是否需要显示帮助信息
-	if shouldShowHelp() {
-		showFullHelp()
-		os.Exit(0)
-	}
-
 	// 检查是否启用交互模式
 	if shouldUseInteractiveMode() {
 		runInteractiveMode()
@@ -205,6 +174,23 @@ func runInteractiveMode() {
 // runCommandLineMode 运行命令行模式
 // 修复命令行模式中的错误
 func runCommandLineMode() {
+	// 初始化日志
+	logger := controller.NewLogger("scan.log")
+	// 确保在所有任务完成后关闭日志
+	defer func() {
+		// 等待日志缓冲区刷新
+		time.Sleep(200 * time.Millisecond)
+		logger.Close()
+	}()
+
+	logger.Log("程序启动，开始执行网络安全扫描任务")
+
+	// 解析命令行参数
+	params, err := controller.ParseInput()
+	if err != nil {
+		log.Fatalf("参数解析失败: %v", err)
+	}
+
 	// 检查是否已经具有管理员权限
 	if !IsAdmin() {
 		fmt.Println("需要管理员权限运行此程序以获得最佳扫描效果")
@@ -236,29 +222,10 @@ func runCommandLineMode() {
 	fmt.Println("程序开始运行（命令行模式）")
 	fmt.Println("Debug: Current process ID:", os.Getpid())
 
-	// 1. 处理用户输入
-	params, err := controller.ParseInput()
-	if err != nil {
-		fmt.Printf("参数错误: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 2. 初始化日志
-	logger := controller.NewLogger("scan.log")
-	// 确保在所有任务完成后关闭日志
-	defer func() {
-		// 等待日志缓冲区刷新
-		time.Sleep(200 * time.Millisecond)
-		logger.Close()
-	}()
-
-	logger.Log("程序启动，开始执行网络安全扫描任务")
-	logger.Logf("用户输入参数: %v", params)
-
 	// 3. 初始化扫描器（传入日志器）
 	icmpScanner := scanner.NewICMPScanner(params.Targets, logger)
 	portScanner := scanner.NewPortScanner(params.Targets, params.Ports, logger, time.Duration(params.Timeout)*time.Second)
-	osDetector := scanner.NewOSDetector(logger)
+	osDetector := scanner.NewOSDetector(logger, portScanner, nil)
 
 	// 4. 初始化调度器（含延迟控制）
 	scheduler := controller.NewScheduler(
@@ -304,12 +271,6 @@ func runCommandLineMode() {
 		}
 		fmt.Printf("\n%s完成，发现 %d 个存活主机\n", scanMethod, len(aliveHosts))
 
-		// 删除TTL信息调试输出（第310-316行）
-		// for _, hostInfo := range aliveHosts {
-		// 	if hostInfo.TTL > 0 {
-		// 		fmt.Printf("主机 %s TTL: %d\n", hostInfo.Host, hostInfo.TTL)
-		// 	}
-		// }
 	} else {
 		// 如果返回了意外的类型，记录错误
 		logger.Errorf("扫描器返回了意外的类型: %T", hosts)
@@ -386,18 +347,42 @@ func runCommandLineMode() {
 		osInfo = make(map[string]string)
 	}
 
-	// 删除冗余的操作系统信息输出（第365-368行）
-	// for host, osType := range osInfo {
-	// 	fmt.Printf("主机 %s 操作系统: %s\n", host, osType)
-	// }
-
 	if len(aliveHostStrings) == 0 {
 		fmt.Println("没有发现存活主机，扫描结束")
 		return
 	}
 
-	// 5. 显示结果
+	// 5. 漏洞扫描
+	fmt.Println("开始漏洞扫描...")
+	vulnScanner := scanner.NewVulnerabilityScanner(logger)
+	vulnResults := make(map[string]*scanner.VulnerabilityScanResult)
+	if err := vulnScanner.LoadVulnerabilityDB(); err != nil {
+		logger.Errorf("漏洞数据库加载失败: %v", err)
+		fmt.Println("漏洞数据库加载失败，跳过漏洞扫描")
+	} else {
+		for _, host := range aliveHostStrings {
+			openPortsList := openPorts[host]
+			var servicesList []scanner.ServiceFingerprint
+			if svc, exists := serviceInfo[host]; exists {
+				for _, fp := range svc {
+					servicesList = append(servicesList, *fp)
+				}
+			}
+			// 获取该主机的路径（如果有）
+			path := "" // 原始targetPaths变量不存在，替换为空字符串
+			result, err := vulnScanner.Scan(host, osInfo[host], openPortsList, servicesList, path)
+			if err != nil {
+				logger.Errorf("主机 %s 漏洞扫描失败: %v", host, err)
+			} else {
+				vulnResults[host] = result
+			}
+		}
+		fmt.Println("漏洞扫描完成")
+	}
+
+	// 6. 显示结果
 	result := output.NewResult(aliveHostStrings, openPorts, osInfo, serviceInfo)
+	result.SetVulnerabilities(vulnResults)
 
 	// 统一处理UDP扫描结果
 	if comprehensiveResult != nil && len(comprehensiveResult.UDPInfo) > 0 {
@@ -409,7 +394,7 @@ func runCommandLineMode() {
 	result.Print()
 
 	// 6. 保存结果
-	if err := result.SaveToFile("scan_result.txt"); err != nil {
+	if err := result.SaveToFile("scan_result.txt", "txt"); err != nil {
 		logger.Errorf("扫描结果保存失败: %v", err)
 		fmt.Printf("扫描结果保存失败: %v\n", err)
 	} else {
@@ -452,7 +437,7 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	// 初始化扫描器
 	icmpScanner := scanner.NewICMPScanner(params.Targets, logger)
 	portScanner := scanner.NewPortScanner(params.Targets, params.Ports, logger, time.Duration(params.Timeout)*time.Second)
-	osDetector := scanner.NewOSDetector(logger)
+	osDetector := scanner.NewOSDetector(logger, portScanner, nil)
 
 	// 新增：初始化调度器（与命令行模式保持一致）
 	scheduler := controller.NewScheduler(
@@ -580,8 +565,37 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	}
 	ui.ShowScanProgress("操作系统检测", 1, 1)
 
-	// 5. 显示结果
+	// 5.1 漏洞扫描
+	ui.ShowScanProgress("漏洞扫描", 0, 0)
+	vulnScanner := scanner.NewVulnerabilityScanner(logger)
+	vulnResults := make(map[string]*scanner.VulnerabilityScanResult)
+	if err := vulnScanner.LoadVulnerabilityDB(); err != nil {
+		logger.Errorf("漏洞数据库加载失败: %v", err)
+		fmt.Println("漏洞数据库加载失败，跳过漏洞扫描")
+	} else {
+		for _, host := range aliveHostStrings {
+			openPortsList := openPorts[host]
+			var servicesList []scanner.ServiceFingerprint
+			if svc, exists := serviceInfo[host]; exists {
+				for _, fp := range svc {
+					if fp != nil {
+						servicesList = append(servicesList, *fp)
+					}
+				}
+			}
+			result, err := vulnScanner.Scan(host, osInfo[host], openPortsList, servicesList, "")
+			if err != nil {
+				logger.Errorf("主机 %s 漏洞扫描失败: %v", host, err)
+			} else {
+				vulnResults[host] = result
+			}
+		}
+	}
+	ui.ShowScanProgress("漏洞扫描", 1, 1)
+
+	// 5.2 显示结果
 	result := output.NewResult(aliveHostStrings, openPorts, osInfo, serviceInfo)
+	result.SetVulnerabilities(vulnResults)
 
 	// 设置UDP扫描结果（移除SMB相关逻辑）
 	if comprehensiveResult != nil && len(comprehensiveResult.UDPInfo) > 0 {
@@ -591,11 +605,13 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 	ui.ShowScanResult(result)
 
 	// 7. 保存结果
-	if err := result.SaveToFile("scan_result.txt"); err != nil {
+	format := ui.AskForSaveFormat()
+	filename := "scan_result." + format
+	if err := result.SaveToFile(filename, format); err != nil {
 		logger.Errorf("扫描结果保存失败: %v", err)
 		fmt.Printf("扫描结果保存失败: %v\n", err)
 	} else {
-		fmt.Println("扫描结果已保存到 scan_result.txt")
+		fmt.Printf("扫描结果已保存到 %s\n", filename)
 	}
 
 	fmt.Println("\n扫描完成！")

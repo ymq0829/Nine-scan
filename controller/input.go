@@ -3,6 +3,9 @@ package controller
 import (
 	"flag" // Go 语言标准库 flag ，用于解析带选项的命令行参数
 	"fmt"
+	"log"
+	"net"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -37,6 +40,59 @@ func ParseInput() (*ScanParams, error) {
 
 	// 解析目标主机
 	targets := strings.Split(*targetsFlag, ",")
+	var resolvedTargets []string
+
+	for _, t := range targets {
+		t = strings.TrimSpace(t)
+		if t == "" {
+			continue
+		}
+
+		// 处理URL格式目标 (如 http://example.com)
+		if strings.Contains(t, "://") {
+			u, err := url.Parse(t)
+			if err != nil {
+				return nil, fmt.Errorf("解析URL目标失败: %s, 错误: %v", t, err)
+			}
+
+			// 提取主机名 (去掉端口)
+			host, _, err := net.SplitHostPort(u.Host)
+			if err != nil {
+				host = u.Host // 无端口时直接使用Host
+			}
+
+			// 解析主机名为IP地址
+			ips, err := net.LookupIP(host)
+			if err != nil {
+				return nil, fmt.Errorf("解析主机名失败: %s, 错误: %v", host, err)
+			}
+
+			for _, ip := range ips {
+				resolvedTargets = append(resolvedTargets, ip.String())
+			}
+			log.Printf("解析URL目标 %s 为 %v", t, ips) // 添加调试日志
+		} else {
+			// 非URL目标：检查是否为IP地址
+			if net.ParseIP(t) == nil {
+				// 非IP地址，尝试解析为主机名
+				ips, err := net.LookupIP(t)
+				if err != nil {
+					return nil, fmt.Errorf("解析主机名失败: %s, 错误: %v", t, err)
+				}
+				for _, ip := range ips {
+					resolvedTargets = append(resolvedTargets, ip.String())
+				}
+			} else {
+				// 直接是IP地址
+				resolvedTargets = append(resolvedTargets, t)
+			}
+		}
+	}
+
+	if len(resolvedTargets) == 0 {
+		return nil, fmt.Errorf("未解析到有效目标地址")
+	}
+	targets = resolvedTargets
 
 	// 解析端口
 	portStrs := strings.Split(*portsFlag, ",")

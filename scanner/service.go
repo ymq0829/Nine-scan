@@ -2,12 +2,653 @@ package scanner
 
 import (
 	"bufio"
+	"encoding/binary"
+	"fmt"
 	"net"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
-	"example.com/project/controller" // 引入日志模块
+	"example.com/project/controller"
 )
+
+// ServiceFingerprint 服务指纹结构体
+type ServiceFingerprint struct {
+	ServiceName    string            `json:"service_name"`    // 服务名称
+	ServiceVersion string            `json:"service_version"` // 服务版本
+	Protocol       string            `json:"protocol"`        // 协议类型 (TCP/UDP)
+	Port           int               `json:"port"`            // 端口号
+	Banner         string            `json:"banner"`          // 原始Banner
+	Fingerprint    string            `json:"fingerprint"`     // 指纹特征
+	Confidence     int               `json:"confidence"`      // 识别置信度 (0-100)
+	Metadata       map[string]string `json:"metadata"`        // 额外元数据
+}
+
+// ProtocolDetector 协议交互探测器
+type ProtocolDetector struct {
+	timeout time.Duration
+	logger  *controller.Logger
+}
+
+// NewProtocolDetector 创建协议探测器
+func NewProtocolDetector(logger *controller.Logger) *ProtocolDetector {
+	return &ProtocolDetector{
+		timeout: 5 * time.Second,
+		logger:  logger,
+	}
+}
+
+// DetectService 主动协议交互探测服务
+func (d *ProtocolDetector) DetectService(host string, port int) *ServiceFingerprint {
+	// 根据端口选择探测策略
+	switch port {
+	case 80, 8080, 8081, 443:
+		return d.detectHTTP(host, port)
+	case 22:
+		return d.detectSSH(host, port)
+	case 3306:
+		return d.detectMySQL(host, port)
+	case 21:
+		return d.detectFTP(host, port)
+	case 25:
+		return d.detectSMTP(host, port)
+	case 53:
+		return d.detectDNS(host, port)
+	case 1433:
+		return d.detectMSSQL(host, port)
+	case 5432:
+		return d.detectPostgreSQL(host, port)
+	case 3389:
+		return d.detectRDP(host, port)
+	default:
+		return d.detectGeneric(host, port)
+	}
+}
+
+// detectHTTP HTTP/HTTPS服务探测
+func (d *ProtocolDetector) detectHTTP(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	// 尝试HTTP连接
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// 发送HTTP请求
+	httpRequest := fmt.Sprintf("GET / HTTP/1.1\r\nHost: %s\r\nUser-Agent: ServiceScanner/1.0\r\nAccept: */*\r\n\r\n", host)
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write([]byte(httpRequest))
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	// 读取响应
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	reader := bufio.NewReader(conn)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	fingerprint.Banner = strings.TrimSpace(response)
+	fingerprint.Metadata["raw_response"] = response
+
+	// 分析HTTP响应
+	if strings.Contains(strings.ToUpper(response), "HTTP") {
+		fingerprint.ServiceName = "HTTP Server"
+		fingerprint.Confidence = 85
+
+		// 提取服务器信息
+		if strings.Contains(response, "Apache") {
+			fingerprint.ServiceName = "Apache HTTP Server"
+			fingerprint.Fingerprint = "Apache"
+		} else if strings.Contains(response, "nginx") {
+			fingerprint.ServiceName = "Nginx HTTP Server"
+			fingerprint.Fingerprint = "Nginx"
+		} else if strings.Contains(response, "IIS") {
+			fingerprint.ServiceName = "Microsoft IIS"
+			fingerprint.Fingerprint = "IIS"
+		}
+
+		// 尝试提取版本信息
+		versionRegex := regexp.MustCompile(`Server:\s*([^\r\n]+)`)
+		if matches := versionRegex.FindStringSubmatch(response); len(matches) > 1 {
+			fingerprint.ServiceVersion = strings.TrimSpace(matches[1])
+			fingerprint.Confidence = 95
+		}
+	}
+
+	// 如果是443端口，标记为HTTPS
+	if port == 443 {
+		fingerprint.ServiceName = "HTTPS " + fingerprint.ServiceName
+		fingerprint.Confidence += 5
+	}
+
+	return fingerprint
+}
+
+// detectSSH SSH服务探测
+func (d *ProtocolDetector) detectSSH(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// SSH服务通常会主动发送banner
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	reader := bufio.NewReader(conn)
+	banner, err := reader.ReadString('\n')
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	fingerprint.Banner = strings.TrimSpace(banner)
+	fingerprint.Metadata["ssh_banner"] = banner
+
+	// 分析SSH banner
+	if strings.Contains(banner, "SSH") {
+		fingerprint.ServiceName = "SSH Server"
+		fingerprint.Confidence = 90
+
+		// 提取版本信息
+		versionRegex := regexp.MustCompile(`SSH-([\d.]+)-([^\s]+)`)
+		if matches := versionRegex.FindStringSubmatch(banner); len(matches) > 2 {
+			fingerprint.ServiceVersion = matches[1]
+			fingerprint.Fingerprint = matches[2]
+			fingerprint.Confidence = 98
+		}
+	}
+
+	return fingerprint
+}
+
+// detectMySQL MySQL服务探测
+func (d *ProtocolDetector) detectMySQL(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// MySQL握手协议初始包
+	handshakePacket := []byte{
+		0x0a,                               // Protocol version
+		0x35, 0x2e, 0x37, 0x2e, 0x32, 0x38, // Server version "5.7.28"
+		0x00, // NULL terminator
+	}
+
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write(handshakePacket)
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	// 读取响应
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	buffer := make([]byte, 1024)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	response := string(buffer[:n])
+	fingerprint.Banner = response
+	fingerprint.Metadata["mysql_response"] = response
+
+	// 分析MySQL响应
+	if strings.Contains(response, "MySQL") || n > 0 && buffer[0] == 0x0a {
+		fingerprint.ServiceName = "MySQL Database"
+		fingerprint.Confidence = 85
+
+		// 尝试提取版本信息
+		if idx := strings.Index(response, "5."); idx != -1 {
+			end := strings.Index(response[idx:], "\x00")
+			if end != -1 {
+				fingerprint.ServiceVersion = response[idx : idx+end]
+				fingerprint.Confidence = 95
+			}
+		}
+	}
+
+	return fingerprint
+}
+
+// detectFTP FTP服务探测
+func (d *ProtocolDetector) detectFTP(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// 读取FTP欢迎消息
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	reader := bufio.NewReader(conn)
+	banner, err := reader.ReadString('\n')
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	fingerprint.Banner = strings.TrimSpace(banner)
+	fingerprint.Metadata["ftp_banner"] = banner
+
+	// 分析FTP响应
+	if strings.HasPrefix(banner, "220") {
+		fingerprint.ServiceName = "FTP Server"
+		fingerprint.Confidence = 90
+
+		// 提取服务器信息
+		if strings.Contains(strings.ToLower(banner), "vsftpd") {
+			fingerprint.ServiceName = "vsftpd"
+			fingerprint.Fingerprint = "vsftpd"
+		} else if strings.Contains(strings.ToLower(banner), "proftpd") {
+			fingerprint.ServiceName = "ProFTPD"
+			fingerprint.Fingerprint = "ProFTPD"
+		} else if strings.Contains(strings.ToLower(banner), "filezilla") {
+			fingerprint.ServiceName = "FileZilla Server"
+			fingerprint.Fingerprint = "FileZilla"
+		}
+
+		// 发送SYST命令获取系统信息
+		conn.SetWriteDeadline(time.Now().Add(d.timeout))
+		conn.Write([]byte("SYST\r\n"))
+		conn.SetReadDeadline(time.Now().Add(d.timeout))
+		systResponse, _ := reader.ReadString('\n')
+		fingerprint.Metadata["syst_response"] = systResponse
+	}
+
+	return fingerprint
+}
+
+// detectSMTP SMTP服务探测
+func (d *ProtocolDetector) detectSMTP(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// 读取SMTP欢迎消息
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	reader := bufio.NewReader(conn)
+	banner, err := reader.ReadString('\n')
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	fingerprint.Banner = strings.TrimSpace(banner)
+	fingerprint.Metadata["smtp_banner"] = banner
+
+	// 分析SMTP响应
+	if strings.HasPrefix(banner, "220") {
+		fingerprint.ServiceName = "SMTP Server"
+		fingerprint.Confidence = 90
+
+		// 识别具体SMTP服务器
+		bannerLower := strings.ToLower(banner)
+		if strings.Contains(bannerLower, "postfix") {
+			fingerprint.ServiceName = "Postfix SMTP"
+			fingerprint.Fingerprint = "Postfix"
+		} else if strings.Contains(bannerLower, "sendmail") {
+			fingerprint.ServiceName = "Sendmail"
+			fingerprint.Fingerprint = "Sendmail"
+		} else if strings.Contains(bannerLower, "exim") {
+			fingerprint.ServiceName = "Exim SMTP"
+			fingerprint.Fingerprint = "Exim"
+		} else if strings.Contains(bannerLower, "microsoft") {
+			fingerprint.ServiceName = "Microsoft SMTP"
+			fingerprint.Fingerprint = "Microsoft"
+		}
+
+		// 发送EHLO命令获取更多信息
+		conn.SetWriteDeadline(time.Now().Add(d.timeout))
+		conn.Write([]byte("EHLO scanner.example.com\r\n"))
+		conn.SetReadDeadline(time.Now().Add(d.timeout))
+
+		// 读取多行响应
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil || strings.HasPrefix(line, "250 ") {
+				break
+			}
+			fingerprint.Metadata["ehlo_response"] += line
+		}
+	}
+
+	return fingerprint
+}
+
+// detectDNS DNS服务探测
+func (d *ProtocolDetector) detectDNS(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "UDP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	// DNS查询包 (查询 example.com 的A记录)
+	dnsQuery := []byte{
+		0x00, 0x01, // Transaction ID
+		0x01, 0x00, // Flags: Standard query
+		0x00, 0x01, // Questions: 1
+		0x00, 0x00, // Answer RRs: 0
+		0x00, 0x00, // Authority RRs: 0
+		0x00, 0x00, // Additional RRs: 0
+		0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', // "example"
+		0x03, 'c', 'o', 'm', // "com"
+		0x00,       // End of name
+		0x00, 0x01, // Type: A
+		0x00, 0x01, // Class: IN
+	}
+
+	conn, err := net.DialTimeout("udp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write(dnsQuery)
+	if err != nil {
+		return fingerprint
+	}
+
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	response := make([]byte, 512)
+	n, err := conn.Read(response)
+	if err == nil && n > 0 {
+		fingerprint.ServiceName = "DNS Server"
+		fingerprint.Confidence = 95
+		fingerprint.Metadata["dns_response_size"] = strconv.Itoa(n)
+	}
+
+	return fingerprint
+}
+
+// detectMSSQL Microsoft SQL Server探测
+func (d *ProtocolDetector) detectMSSQL(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// TDS协议预登录包
+	tdsPacket := []byte{
+		0x12, 0x01, 0x00, 0x2f, 0x00, 0x00, 0x01, 0x00,
+		0x00, 0x00, 0x1a, 0x00, 0x06, 0x01, 0x00, 0x20,
+		0x00, 0x01, 0x02, 0x00, 0x21, 0x00, 0x01, 0x03,
+		0x00, 0x22, 0x00, 0x04, 0x04, 0x00, 0x24, 0x00,
+		0x01, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+	}
+
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write(tdsPacket)
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	response := make([]byte, 1024)
+	n, err := conn.Read(response)
+	if err == nil && n > 0 {
+		fingerprint.ServiceName = "Microsoft SQL Server"
+		fingerprint.Confidence = 90
+		fingerprint.Metadata["mssql_response"] = "TDS protocol detected"
+	}
+
+	return fingerprint
+}
+
+// detectPostgreSQL PostgreSQL服务探测
+func (d *ProtocolDetector) detectPostgreSQL(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// PostgreSQL启动消息
+	startupMessage := make([]byte, 8)
+	binary.BigEndian.PutUint32(startupMessage[0:4], 8)      // 长度
+	binary.BigEndian.PutUint32(startupMessage[4:8], 196608) // 协议版本 3.0
+
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write(startupMessage)
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	response := make([]byte, 1024)
+	n, err := conn.Read(response)
+	if err == nil && n > 0 {
+		fingerprint.ServiceName = "PostgreSQL Database"
+		fingerprint.Confidence = 90
+		fingerprint.Metadata["postgresql_response"] = "PostgreSQL protocol detected"
+	}
+
+	return fingerprint
+}
+
+// detectRDP RDP服务探测
+func (d *ProtocolDetector) detectRDP(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	// RDP连接请求
+	rdpRequest := []byte{
+		0x03, 0x00, 0x00, 0x13, 0x0e, 0xe0, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x01, 0x00, 0x08, 0x00, 0x03,
+		0x00, 0x00, 0x00,
+	}
+
+	conn.SetWriteDeadline(time.Now().Add(d.timeout))
+	_, err = conn.Write(rdpRequest)
+	if err != nil {
+		return d.fallbackToBanner(conn, port)
+	}
+
+	conn.SetReadDeadline(time.Now().Add(d.timeout))
+	response := make([]byte, 1024)
+	n, err := conn.Read(response)
+	if err == nil && n > 0 {
+		fingerprint.ServiceName = "RDP (Remote Desktop Protocol)"
+		fingerprint.Confidence = 95
+		fingerprint.Metadata["rdp_response"] = "RDP protocol detected"
+	}
+
+	return fingerprint
+}
+
+// detectGeneric 通用服务探测
+func (d *ProtocolDetector) detectGeneric(host string, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, strconv.Itoa(port)), d.timeout)
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (connection failed)"
+		return fingerprint
+	}
+	defer conn.Close()
+
+	return d.fallbackToBanner(conn, port)
+}
+
+// fallbackToBanner 回退到基本的Banner抓取和端口识别
+func (d *ProtocolDetector) fallbackToBanner(conn net.Conn, port int) *ServiceFingerprint {
+	fingerprint := &ServiceFingerprint{
+		Port:       port,
+		Protocol:   "TCP",
+		Metadata:   make(map[string]string),
+		Confidence: 0,
+	}
+
+	// 尝试读取banner
+	conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	reader := bufio.NewReader(conn)
+	banner, err := reader.ReadString('\n')
+	if err != nil {
+		fingerprint.ServiceName = "Unknown (no banner)"
+		return fingerprint
+	}
+
+	fingerprint.Banner = strings.TrimSpace(banner)
+	fingerprint.ServiceName = "Unknown Service"
+	fingerprint.Confidence = 0
+
+	// 基于端口号的预识别（提高基础识别准确率）
+	switch port {
+	case 22:
+		fingerprint.ServiceName = "SSH Service"
+		fingerprint.Confidence = 90
+	case 80, 8080, 8081:
+		fingerprint.ServiceName = "HTTP Service"
+		fingerprint.Confidence = 85
+	case 443:
+		fingerprint.ServiceName = "HTTPS Service"
+		fingerprint.Confidence = 95
+	case 3306:
+		fingerprint.ServiceName = "MySQL Database"
+		fingerprint.Confidence = 85
+	case 21:
+		fingerprint.ServiceName = "FTP Service"
+		fingerprint.Confidence = 80
+	case 25:
+		fingerprint.ServiceName = "SMTP Service"
+		fingerprint.Confidence = 80
+	case 53:
+		fingerprint.ServiceName = "DNS Server"
+		fingerprint.Confidence = 95
+	case 1433:
+		fingerprint.ServiceName = "Microsoft SQL Server"
+		fingerprint.Confidence = 90
+	case 5432:
+		fingerprint.ServiceName = "PostgreSQL Database"
+		fingerprint.Confidence = 90
+	case 3389:
+		fingerprint.ServiceName = "RDP Service"
+		fingerprint.Confidence = 95
+	default:
+		fingerprint.ServiceName = "Unknown Service"
+		fingerprint.Confidence = 30
+	}
+
+	// 基于Banner内容的增强识别（覆盖端口识别结果）
+	if banner != "" {
+		bannerUpper := strings.ToUpper(banner)
+		switch {
+		case strings.Contains(bannerUpper, "HTTP"):
+			fingerprint.ServiceName = "HTTP Service"
+			fingerprint.Confidence = max(fingerprint.Confidence, 70)
+		case strings.Contains(banner, "SSH"):
+			fingerprint.ServiceName = "SSH Service"
+			fingerprint.Confidence = max(fingerprint.Confidence, 80)
+		case strings.Contains(banner, "FTP"):
+			fingerprint.ServiceName = "FTP Service"
+			fingerprint.Confidence = max(fingerprint.Confidence, 75)
+		case strings.Contains(banner, "SMTP"):
+			fingerprint.ServiceName = "SMTP Service"
+			fingerprint.Confidence = max(fingerprint.Confidence, 75)
+		case strings.Contains(banner, "MYSQL"):
+			fingerprint.ServiceName = "MySQL Database"
+			fingerprint.Confidence = max(fingerprint.Confidence, 80)
+		case strings.Contains(banner, "APACHE"):
+			fingerprint.ServiceName = "Apache HTTP Server"
+			fingerprint.Confidence = max(fingerprint.Confidence, 85)
+		case strings.Contains(banner, "NGINX"):
+			fingerprint.ServiceName = "Nginx HTTP Server"
+			fingerprint.Confidence = max(fingerprint.Confidence, 85)
+		}
+	}
+
+	return fingerprint
+}
+
+// max 辅助函数，返回两个整数中的较大值
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
 
 // ServiceScanner 服务扫描器
 type ServiceScanner struct {
@@ -36,13 +677,19 @@ func (s *ServiceScanner) Scan() (interface{}, error) {
 	for host, ports := range s.targets {
 		s.logger.Logf("开始扫描主机%s的服务，开放端口数: %d", host, len(ports))
 		hostServices := make(map[int]*ServiceFingerprint)
+		// 在Scan方法中添加过滤逻辑
 		for _, port := range ports {
-			// 使用协议探测器进行主动探测
 			fingerprint := s.protocolDetector.DetectService(host, port)
-			hostServices[port] = fingerprint
 
-			s.logger.Logf("%s:%d 识别为: %s (置信度: %d%%)",
-				host, port, fingerprint.ServiceName, fingerprint.Confidence)
+			// 过滤低置信度结果（建议阈值设为30%）
+			if fingerprint.Confidence >= 30 {
+				hostServices[port] = fingerprint
+				s.logger.Logf("%s:%d 识别为: %s (置信度: %d%%)",
+					host, port, fingerprint.ServiceName, fingerprint.Confidence)
+			} else {
+				s.logger.Logf("%s:%d 服务识别置信度过低(%d%%)，已过滤",
+					host, port, fingerprint.Confidence)
+			}
 		}
 		serviceResult[host] = hostServices
 		s.logger.Logf("%s 服务扫描完成", host)
@@ -52,77 +699,12 @@ func (s *ServiceScanner) Scan() (interface{}, error) {
 	return serviceResult, nil
 }
 
-// getServiceBanner 根据连接和端口抓取并识别服务Banner（保留向后兼容）
-func (s *ServiceScanner) getServiceBanner(conn net.Conn, port int) string {
-	// 针对常见端口提前预判，提高识别准确率
-	switch port {
-	case 80, 8080, 8081:
-		// 发送HTTP请求头，触发服务响应
-		_, _ = conn.Write([]byte("HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n"))
-	case 22:
-		// SSH服务通常会主动发送Banner，直接读取即可
-	case 3306:
-		// MySQL端口，读取初始响应
-	case 443:
-		// HTTPS服务，简单识别
-		_, _ = conn.Write([]byte("HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n"))
-	case 21:
-		// FTP服务
-	case 25:
-		// SMTP服务
-	}
-
-	// 设置读取超时
-	_ = conn.SetReadDeadline(time.Now().Add(s.timeout))
-	scanner := bufio.NewScanner(conn)
-	scanner.Scan()
-	banner := strings.TrimSpace(scanner.Text())
-
-	// 根据Banner特征识别服务
-	return s.recognizeServiceByBanner(banner, port)
-}
-
-// recognizeServiceByBanner 基于Banner内容和端口识别服务类型（保留向后兼容）
-func (s *ServiceScanner) recognizeServiceByBanner(banner string, port int) string {
-	// 使用新的指纹匹配功能
-	match := MatchFingerprint(banner, port)
-
-	if match.Confidence >= 80 {
-		if match.Version != "" {
-			return match.Service + " " + match.Version
-		}
-		return match.Service
-	}
-
-	// 回退到原有逻辑
-	switch {
-	case strings.Contains(banner, "SSH") || port == 22:
-		return "SSH (Secure Shell)"
-	case strings.Contains(banner, "HTTP") || port == 80 || port == 8080 || port == 8081:
-		return "HTTP/HTTPS Web Service"
-	case strings.Contains(banner, "MySQL") || port == 3306:
-		return "MySQL Database"
-	case strings.Contains(banner, "FTP") || port == 21:
-		return "FTP (File Transfer Protocol)"
-	case strings.Contains(banner, "SMTP") || port == 25:
-		return "SMTP (Simple Mail Transfer Protocol)"
-	case port == 443:
-		return "HTTPS (Secure Web Service)"
-	case port == 3389:
-		return "RDP (Remote Desktop Protocol)"
-	case banner == "":
-		return "Unknown (no banner returned)"
-	default:
-		return "Unknown: " + banner
-	}
-}
-
-// GetServiceFingerprint 获取服务的详细指纹信息（新增方法）
+// GetServiceFingerprint 获取服务的详细指纹信息
 func (s *ServiceScanner) GetServiceFingerprint(host string, port int) *ServiceFingerprint {
 	return s.protocolDetector.DetectService(host, port)
 }
 
-// EnhancedScan 增强扫描模式，返回更详细的信息（新增方法）
+// EnhancedScan 增强扫描模式，返回更详细的信息
 func (s *ServiceScanner) EnhancedScan() (map[string]map[int]*ServiceFingerprint, error) {
 	s.logger.Log("启动增强服务扫描模式")
 	result, err := s.Scan()
@@ -132,23 +714,18 @@ func (s *ServiceScanner) EnhancedScan() (map[string]map[int]*ServiceFingerprint,
 	return result.(map[string]map[int]*ServiceFingerprint), nil
 }
 
-// filterNonASCII 过滤非ASCII字符，解决乱码问题（改进版）
-func filterNonASCII(s string) string {
-	var result strings.Builder
-	for _, r := range s {
-		// 放宽过滤条件，保留更多可读字符
-		if r >= 32 && r <= 126 { // 保留基本ASCII可打印字符
-			result.WriteRune(r)
-		} else if r >= 0x80 && r <= 0x9F { // 过滤Windows-1252控制字符
-			// 跳过这些控制字符，它们通常会导致乱码
-		} else if r >= 0xA0 && r <= 0xFF { // 保留扩展拉丁字符
-			result.WriteRune(r)
-		} else if r == '\n' || r == '\r' || r == '\t' || r == ' ' {
-			result.WriteRune(r) // 保留空白字符
-		} else if r >= 0x4E00 && r <= 0x9FFF { // 保留中文字符
-			result.WriteRune(r)
+// ServiceScanResult 封装服务扫描结果
+type ServiceScanResult struct {
+	ServiceInfo map[string]map[int]*ServiceFingerprint // 主机 -> 端口 -> 服务指纹
+}
+
+// GetServices 返回指定主机的服务映射（端口->服务名称）
+func (r *ServiceScanResult) GetServices(host string) map[string]string {
+	services := make(map[string]string)
+	if portMap, exists := r.ServiceInfo[host]; exists {
+		for port, fingerprint := range portMap {
+			services[strconv.Itoa(port)] = fingerprint.ServiceName
 		}
-		// 其他特殊字符被过滤掉
 	}
-	return result.String()
+	return services
 }

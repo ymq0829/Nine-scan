@@ -34,6 +34,14 @@ type ComprehensiveScanResult struct {
 	UDPInfo  map[string]map[string]interface{} // UDP扫描结果
 }
 
+// GetOpenPorts 返回指定主机的开放TCP端口列表
+func (r *ComprehensiveScanResult) GetOpenPorts(host string) []int {
+	if ports, exists := r.TCPPorts[host]; exists {
+		return ports
+	}
+	return []int{}
+}
+
 // 修改：PortScanner结构体支持多协议扫描
 type PortScanner struct {
 	targets          []string
@@ -100,89 +108,6 @@ func (s *PortScanner) scanTCP(host string, port int) comprehensivePortScanResult
 		}
 	}
 }
-
-// 删除整个scanSMB函数
-// SMB扫描函数（基于TCP 445端口）
-// func (s *PortScanner) scanSMB(host string, port int) comprehensivePortScanResult {
-//     addr := net.JoinHostPort(host, fmt.Sprintf("%d", port))
-//     conn, err := net.DialTimeout("tcp", addr, s.timeout)
-//     if err != nil {
-//         return comprehensivePortScanResult{
-//             host:     host,
-//             port:     port,
-//             protocol: "smb",
-//             open:     false,
-//             error:    err,
-//         }
-//     }
-//     defer conn.Close()
-//
-//     // 发送SMB协商请求
-//     smbNegotiate := []byte{
-//         0x00, 0x00, 0x00, 0x85, // NetBIOS session header
-//         0xFF, 0x53, 0x4D, 0x42, // SMB header: SMB\n
-//         0x72,                   // Command: Negotiate Protocol
-//         0x00, 0x00, 0x00, 0x00, // Status
-//         0x18,       // Flags
-//         0x53, 0xC8, // Flags2
-//         0x00, 0x00, // PID High
-//         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Security
-//         0x00, 0x00, // Reserved
-//         0x00, 0x00, 0x00, 0x00, // TID
-//         0x00, 0x00, // PID Low
-//         0x00, 0x00, // UID
-//         0x00, 0x00, // MID
-//         0x00,       // Word Count
-//         0x00, 0x00, // Byte Count
-//     }
-//
-//     _, err = conn.Write(smbNegotiate)
-//     if err != nil {
-//         return comprehensivePortScanResult{
-//             host:     host,
-//             port:     port,
-//             protocol: "smb",
-//             open:     true,
-//             banner:   "SMB服务检测到（发送请求失败）",
-//             error:    err,
-//         }
-//     }
-//
-//     // 读取响应
-//     buffer := make([]byte, 1024)
-//     conn.SetReadDeadline(time.Now().Add(s.timeout))
-//     n, err := conn.Read(buffer)
-//     if err != nil {
-//         return comprehensivePortScanResult{
-//             host:     host,
-//             port:     port,
-//             protocol: "smb",
-//             open:     true,
-//             banner:   "SMB服务检测到（无响应）",
-//         }
-//     }
-//
-//     response := buffer[:n]
-//     if len(response) >= 4 && response[0] == 0x00 && response[1] == 0x00 && response[2] == 0x00 {
-//         s.logger.Logf("%s:%d SMB服务检测到", host, port)
-//         return comprehensivePortScanResult{
-//             host:     host,
-//             port:     port,
-//             protocol: "smb",
-//             open:     true,
-//             banner:   "SMB服务检测到",
-//         }
-//     }
-//
-//     s.logger.Logf("%s:%d SMB服务检测到（未知响应）", host, port)
-//     return comprehensivePortScanResult{
-//         host:     host,
-//         port:     port,
-//         protocol: "smb",
-//         open:     true,
-//         banner:   "未知SMB响应",
-//     }
-// }
 
 // UDP扫描函数
 func (s *PortScanner) scanUDP(host string, port int) comprehensivePortScanResult {

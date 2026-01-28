@@ -1,0 +1,118 @@
+{
+  "scan_time": "2026-01-29 00:07:15",
+  "alive_hosts": [
+    {
+      "host": "172.16.9.219",
+      "os": "Windows",
+      "tcp_ports": [
+        110,
+        21,
+        80,
+        143,
+        3306,
+        135,
+        25,
+        139,
+        445
+      ],
+      "services": {
+        "21": {
+          "service_name": "FileZilla Server",
+          "service_version": "",
+          "protocol": "TCP",
+          "port": 21,
+          "banner": "220 FileZilla Server 0.9.60 beta written by Tim Kosse (Tim.Kosse@gmx.de) Please visit http://sourceforge.",
+          "fingerprint": "FileZilla",
+          "confidence": 90,
+          "metadata": {
+            "ftp_banner": "220 FileZilla Server 0.9.60 beta written by Tim Kosse (Tim.Kosse@gmx.de) Please visit http://sourceforge.\r\n",
+            "syst_response": "215 UNIX emulated by FileZilla\r\n"
+          }
+        },
+        "3306": {
+          "service_name": "MySQL Database",
+          "service_version": "",
+          "protocol": "TCP",
+          "port": 3306,
+          "banner": "\u003c\u0000\u0000\u0000\ufffdj\u0004Host 'YMQ' is not allowed to connect to this MySQL server",
+          "fingerprint": "",
+          "confidence": 85,
+          "metadata": {
+            "mysql_response": "\u003c\u0000\u0000\u0000\ufffdj\u0004Host 'YMQ' is not allowed to connect to this MySQL server"
+          }
+        },
+        "80": {
+          "service_name": "HTTP Server",
+          "service_version": "",
+          "protocol": "TCP",
+          "port": 80,
+          "banner": "HTTP/1.1 200 OK",
+          "fingerprint": "",
+          "confidence": 85,
+          "metadata": {
+            "raw_response": "HTTP/1.1 200 OK\r\n"
+          }
+        }
+      },
+      "vulnerabilities": [
+        {
+          "vulnerability_id": "CVE-2017-0144",
+          "title": "EternalBlue SMB漏洞",
+          "description": "Microsoft Windows SMBv1服务器存在远程代码执行漏洞",
+          "severity": "CVSS_V3",
+          "cvss_score": 8.1,
+          "affected_service": "操作系统",
+          "affected_version": "Windows",
+          "references": null,
+          "confidence": 85,
+          "evidence": {
+            "操作系统": "Windows",
+            "检测方法": "操作系统版本匹配"
+          },
+          "osv_data": {
+            "schema_version": "",
+            "id": "CVE-2017-0144",
+            "modified": "",
+            "published": "2017-03-14",
+            "summary": "EternalBlue SMB漏洞",
+            "details": "Microsoft Windows SMBv1服务器存在远程代码执行漏洞",
+            "severity": [
+              {
+                "type": "CVSS_V3",
+                "score": "8.1"
+              }
+            ],
+            "affected": [
+              {
+                "package": {
+                  "ecosystem": "os",
+                  "name": "windows"
+                },
+                "ranges": null
+              }
+            ],
+            "references": null
+          }
+        }
+      ]
+    },
+    {
+      "host": "172.16.8.1",
+      "os": "Linux/Unix",
+      "tcp_ports": [
+        25,
+        143,
+        110
+      ]
+    },
+    {
+      "host": "192.168.47.128",
+      "os": "Linux/Unix",
+      "tcp_ports": [
+        25,
+        143,
+        110
+      ]
+    }
+  ]
+}

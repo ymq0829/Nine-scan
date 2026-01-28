@@ -21,7 +21,7 @@ type Logger struct {
 	wg       sync.WaitGroup
 	once     sync.Once
 	closed   uint32 // atomic: 0 = open, 1 = closed
- writerMu sync.Mutex
+	writerMu sync.Mutex
 }
 
 // NewLogger 初始化异步日志记录器（向后兼容原调用 NewLogger(filename)）
@@ -29,7 +29,7 @@ func NewLogger(filename string) *Logger {
 	// 打开日志文件：不存在则创建，存在则追加写入
 	file, err := os.OpenFile(
 		filename,
-		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+		os.O_CREATE|os.O_WRONLY|os.O_TRUNC, // 修改为覆盖模式
 		0600,
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func NewLogger(filename string) *Logger {
 	}
 	l.wg.Add(1)
 	go l.runWriter()
- return l
+	return l
 }
 
 // runWriter: 单写入协程，负责从 channel 拉取日志并写入缓冲 writer
@@ -118,6 +118,12 @@ func (l *Logger) Error(msg string) {
 // Errorf 记录格式化错误日志（支持占位符）
 func (l *Logger) Errorf(format string, v ...interface{}) {
 	l.Error(fmt.Sprintf(format, v...))
+}
+
+// Fatalf 记录格式化致命错误日志并退出程序
+func (l *Logger) Fatalf(format string, v ...interface{}) {
+	l.Errorf(format, v...)
+	os.Exit(1)
 }
 
 // Close 关闭日志记录器：关闭 channel，等待写入完成并关闭文件。
