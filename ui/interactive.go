@@ -106,7 +106,7 @@ func (ui *InteractiveUI) getTimeout() int {
 
 // getTargets 获取目标主机列表
 func (ui *InteractiveUI) getTargets() []string {
-	fmt.Print("请输入目标主机（支持IP、域名、CIDR，多个目标用逗号分隔）: ")
+	fmt.Print("请输入目标主机（支持IP、域名、CIDR、IP范围如192.168.1.1-254，多个目标用逗号分隔）: ")
 	input, _ := ui.reader.ReadString('\n')
 	input = strings.TrimSpace(input)
 
@@ -114,11 +114,79 @@ func (ui *InteractiveUI) getTargets() []string {
 		return []string{"127.0.0.1"} // 默认目标
 	}
 
+	var resolvedTargets []string
 	targets := strings.Split(input, ",")
-	for i := range targets {
-		targets[i] = strings.TrimSpace(targets[i])
+
+	for _, t := range targets {
+		t = strings.TrimSpace(t)
+		if t == "" {
+			continue
+		}
+
+		// 检查是否为IP地址范围格式（如"192.168.47.1-254"）
+		if strings.Contains(t, ".") && strings.Contains(t, "-") {
+			// 尝试解析为IP范围
+			ips, err := parseIPRange(t)
+			if err == nil {
+				// 成功解析为IP范围，添加所有IP地址
+				resolvedTargets = append(resolvedTargets, ips...)
+				continue
+			}
+			// 如果不是有效的IP范围，继续其他解析方式
+		}
+
+		// 直接添加目标（支持IP、域名、CIDR）
+		resolvedTargets = append(resolvedTargets, t)
 	}
-	return targets
+
+	if len(resolvedTargets) == 0 {
+		return []string{"127.0.0.1"} // 默认目标
+	}
+
+	return resolvedTargets
+}
+
+// parseIPRange 解析IP范围格式如"192.168.1.1-254"
+func parseIPRange(ipRange string) ([]string, error) {
+	parts := strings.Split(ipRange, "-")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid IP range format")
+	}
+
+	baseIP := parts[0]
+	lastOctetRange := parts[1]
+
+	ipParts := strings.Split(baseIP, ".")
+	if len(ipParts) != 4 {
+		return nil, fmt.Errorf("invalid IP address")
+	}
+
+	start, err := strconv.Atoi(ipParts[3])
+	if err != nil {
+		return nil, fmt.Errorf("invalid last octet")
+	}
+
+	end, err := strconv.Atoi(lastOctetRange)
+	if err != nil {
+		return nil, fmt.Errorf("invalid range end")
+	}
+
+	// 验证范围合理性
+	if start < 0 || start > 255 || end < 0 || end > 255 {
+		return nil, fmt.Errorf("IP地址范围超出有效范围（0-255）")
+	}
+	if start > end {
+		return nil, fmt.Errorf("起始地址不能大于结束地址")
+	}
+	if end-start > 1000 {
+		return nil, fmt.Errorf("IP范围过大，最大支持1000个地址")
+	}
+
+	var ips []string
+	for i := start; i <= end; i++ {
+		ips = append(ips, fmt.Sprintf("%s.%s.%s.%d", ipParts[0], ipParts[1], ipParts[2], i))
+	}
+	return ips, nil
 }
 
 // getPorts 获取端口列表

@@ -1,12 +1,14 @@
 package output
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
-	"time" // 添加time包导入
+	"time"
 
 	"example.com/project/scanner"
 )
@@ -55,12 +57,14 @@ func (r *Result) Print() {
 		fmt.Printf("\n主机: %s\n", host)
 		fmt.Printf("  操作系统: %s\n", r.OSInfo[host])
 
-		// 整合TCP和UDP端口信息
+		// 显示开放端口
 		fmt.Printf("  开放端口:\n")
 
-		// 显示TCP端口
+		// 显示TCP端口 - 修复显示逻辑
 		if tcpPorts, exists := r.OpenPorts[host]; exists && len(tcpPorts) > 0 {
 			fmt.Printf("    TCP: %v\n", tcpPorts)
+		} else {
+			fmt.Printf("    TCP: 无开放端口\n")
 		}
 
 		// 显示UDP端口（如果存在且确认开放）
@@ -88,9 +92,17 @@ func (r *Result) Print() {
 
 					if len(confirmedUDPPorts) > 0 {
 						fmt.Printf("    UDP: %v\n", confirmedUDPPorts)
+					} else {
+						fmt.Printf("    UDP: 无开放端口\n")
 					}
+				} else {
+					fmt.Printf("    UDP: 无开放端口\n")
 				}
+			} else {
+				fmt.Printf("    UDP: 无扫描数据\n")
 			}
+		} else {
+			fmt.Printf("    UDP: 未启用扫描\n")
 		}
 
 		// 显示服务信息（包含必要的指纹详情）
@@ -149,21 +161,54 @@ func filterNonASCII(s string) string {
 }
 
 // SaveToFile 保存结果到文件，支持多种格式
-// 格式选项: "txt", "csv", "tsv", "json"
+// 格式: "txt", "csv", "tsv", "json"
 func (r *Result) SaveToFile(filename, format string) error {
+	log.Printf("保存文件: %s, 格式: %s", filename, format)
+
 	// 默认使用txt格式
 	if format == "" {
 		format = "txt"
 	}
 
+	// 统一转换为小写进行比较
+	format = strings.ToLower(format)
+
 	switch format {
-	case "csv", "tsv":
-		return r.saveAsTable(filename, format)
+	case "csv":
+		return r.SaveToCSV(filename)
+	case "tsv":
+		return r.SaveToTSV(filename)
 	case "json":
 		return r.saveAsJSON(filename)
 	default: // 包括 "txt"
 		return r.saveAsTxt(filename)
 	}
+}
+
+// SaveAuto 自动保存结果，默认保存为TXT格式
+func (r *Result) SaveAuto() error {
+	// 生成默认文件名：scan_result_时间戳.txt
+	timestamp := time.Now().Format("20060102_150405")
+	filename := fmt.Sprintf("scan_result_%s.txt", timestamp)
+
+	log.Printf("自动保存结果到: %s", filename)
+	return r.saveAsTxt(filename)
+}
+
+// SaveWithOptions 保存结果并提供格式选项
+func (r *Result) SaveWithOptions() error {
+	// 首先自动保存为TXT格式
+	if err := r.SaveAuto(); err != nil {
+		return fmt.Errorf("自动保存失败: %v", err)
+	}
+
+	fmt.Println("扫描结果已自动保存为TXT格式")
+	fmt.Println("如果需要其他格式，请使用以下命令:")
+	fmt.Println("  - 保存为CSV格式: project.exe -format csv")
+	fmt.Println("  - 保存为TSV格式: project.exe -format tsv")
+	fmt.Println("  - 保存为JSON格式: project.exe -format json")
+
+	return nil
 }
 
 // saveAsTxt 保存为文本格式
@@ -208,9 +253,14 @@ func (r *Result) saveAsTxt(filename string) error {
 			return err
 		}
 
-		// 显示TCP端口
+		// 显示TCP端口 - 修复显示逻辑
 		if tcpPorts, exists := r.OpenPorts[host]; exists && len(tcpPorts) > 0 {
 			_, err = file.WriteString(fmt.Sprintf("    TCP: %v\n", tcpPorts))
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = file.WriteString("    TCP: 无开放端口\n")
 			if err != nil {
 				return err
 			}
@@ -244,8 +294,28 @@ func (r *Result) saveAsTxt(filename string) error {
 						if err != nil {
 							return err
 						}
+					} else {
+						_, err = file.WriteString("    UDP: 无开放端口\n")
+						if err != nil {
+							return err
+						}
+					}
+				} else {
+					_, err = file.WriteString("    UDP: 无开放端口\n")
+					if err != nil {
+						return err
 					}
 				}
+			} else {
+				_, err = file.WriteString("    UDP: 无扫描数据\n")
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			_, err = file.WriteString("    UDP: 未启用扫描\n")
+			if err != nil {
+				return err
 			}
 		}
 
@@ -329,54 +399,127 @@ func (r *Result) saveAsTxt(filename string) error {
 	return nil // 最终返回nil表示无错误
 }
 
-// saveAsTable 保存为表格格式 (CSV/TSV)
-func (r *Result) saveAsTable(filename, format string) error {
+// SaveToCSV 保存为CSV格式
+func (r *Result) SaveToCSV(filename string) error {
+	return r.saveAsDelimitedFile(filename, ",")
+}
+
+// SaveToTSV 保存为TSV格式
+func (r *Result) SaveToTSV(filename string) error {
+	return r.saveAsDelimitedFile(filename, "\t")
+}
+
+// saveAsDelimitedFile 保存为分隔符格式文件
+func (r *Result) saveAsDelimitedFile(filename, delimiter string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	// 确定分隔符
-	delimiter := ","
-	if format == "tsv" {
-		delimiter = "\t"
+	// 写入UTF-8 BOM，解决Windows下的乱码问题
+	if _, err := file.WriteString("\xEF\xBB\xBF"); err != nil {
+		return err
 	}
 
-	// 写入表头
+	writer := csv.NewWriter(file)
+	writer.Comma = rune(delimiter[0]) // 设置分隔符
+	defer writer.Flush()
+
+	// 写入扫描基本信息
+	if err := writer.Write([]string{"扫描信息", "", "", "", "", ""}); err != nil {
+		return err
+	}
+	if err := writer.Write([]string{"扫描时间", r.ScanTime, "", "", "", ""}); err != nil {
+		return err
+	}
+	if err := writer.Write([]string{"在线主机数量", fmt.Sprintf("%d", len(r.AliveHosts)), "", "", "", ""}); err != nil {
+		return err
+	}
+	if err := writer.Write([]string{"", "", "", "", "", ""}); err != nil {
+		return err
+	}
+
+	// 写入主机详情表头
 	header := []string{
 		"主机", "操作系统", "端口", "协议", "服务名称",
 		"服务版本", "置信度", "漏洞数量", "扫描时间",
 	}
-	file.WriteString(strings.Join(header, delimiter) + "\n")
+	if err := writer.Write(header); err != nil {
+		return err
+	}
 
 	// 写入数据行
 	for _, host := range r.AliveHosts {
-		// TCP端口
-		if tcpPorts, exists := r.OpenPorts[host]; exists {
+		// 获取操作系统信息，如果不存在则使用默认值
+		osInfo := r.OSInfo[host]
+		if osInfo == "" {
+			osInfo = "Unknown"
+		}
+
+		// 检查是否有TCP端口信息
+		if tcpPorts, exists := r.OpenPorts[host]; exists && len(tcpPorts) > 0 {
 			for _, port := range tcpPorts {
-				fingerprint := r.ServiceInfo[host][port]
+				// 获取服务指纹信息
+				var fingerprint *scanner.ServiceFingerprint
+				if services, exists := r.ServiceInfo[host]; exists {
+					fingerprint = services[port]
+				}
+
+				// 计算漏洞数量
 				vulnCount := 0
 				if vulns, exists := r.Vulnerabilities[host]; exists {
 					vulnCount = len(vulns.Vulnerabilities)
 				}
 
+				// 准备服务信息
+				serviceName := ""
+				serviceVersion := ""
+				confidence := "0"
+				if fingerprint != nil {
+					serviceName = fingerprint.ServiceName
+					if serviceName == "" {
+						serviceName = "Unknown"
+					}
+					serviceVersion = fingerprint.ServiceVersion
+					confidence = strconv.Itoa(fingerprint.Confidence)
+				}
+
+				// 写入TCP端口行
 				row := []string{
 					host,
-					r.OSInfo[host],
+					osInfo,
 					strconv.Itoa(port),
 					"TCP",
-					fingerprint.ServiceName,
-					fingerprint.ServiceVersion,
-					strconv.Itoa(fingerprint.Confidence),
+					serviceName,
+					serviceVersion,
+					confidence,
 					strconv.Itoa(vulnCount),
 					r.ScanTime,
 				}
-				file.WriteString(strings.Join(row, delimiter) + "\n")
+				if err := writer.Write(row); err != nil {
+					return err
+				}
+			}
+		} else {
+			// 如果没有TCP端口信息，至少写入主机基本信息
+			row := []string{
+				host,
+				osInfo,
+				"",  // 端口
+				"",  // 协议
+				"",  // 服务名称
+				"",  // 服务版本
+				"",  // 置信度
+				"0", // 漏洞数量
+				r.ScanTime,
+			}
+			if err := writer.Write(row); err != nil {
+				return err
 			}
 		}
 
-		// UDP端口
+		// UDP端口（如果有）
 		if r.UDPInfo != nil {
 			if udpInfo, ok := r.UDPInfo.(map[string]map[string]interface{}); ok {
 				if hostUDPInfo, exists := udpInfo[host]; exists {
@@ -387,7 +530,7 @@ func (r *Result) saveAsTable(filename, format string) error {
 									if port, err := strconv.Atoi(strings.TrimPrefix(portKey, "port_")); err == nil {
 										row := []string{
 											host,
-											r.OSInfo[host],
+											osInfo,
 											strconv.Itoa(port),
 											"UDP",
 											"",  // 服务名称
@@ -396,7 +539,9 @@ func (r *Result) saveAsTable(filename, format string) error {
 											"0", // 漏洞数量
 											r.ScanTime,
 										}
-										file.WriteString(strings.Join(row, delimiter) + "\n")
+										if err := writer.Write(row); err != nil {
+											return err
+										}
 									}
 								}
 							}
@@ -407,7 +552,35 @@ func (r *Result) saveAsTable(filename, format string) error {
 		}
 	}
 
+	// 如果没有写入任何数据行，写入一条空行表示没有数据
+	if len(r.AliveHosts) == 0 {
+		row := []string{
+			"无存活主机",
+			"", "", "", "", "", "", "", "",
+		}
+		if err := writer.Write(row); err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+// JSONResult JSON序列化结构
+type JSONResult struct {
+	ScanTime   string       `json:"scan_time"`
+	TotalHosts int          `json:"total_hosts"`
+	AliveHosts []HostResult `json:"alive_hosts"`
+}
+
+// HostResult 主机结果结构
+type HostResult struct {
+	Host            string                              `json:"host,omitempty"`
+	OS              string                              `json:"os,omitempty"`
+	TCPPorts        []int                               `json:"tcp_ports,omitempty"`
+	UDPPorts        []int                               `json:"udp_ports,omitempty"`
+	Services        map[int]*scanner.ServiceFingerprint `json:"services,omitempty"`
+	Vulnerabilities []scanner.DetectedVulnerability     `json:"vulnerabilities,omitempty"`
 }
 
 // saveAsJSON 保存为JSON格式
@@ -418,23 +591,9 @@ func (r *Result) saveAsJSON(filename string) error {
 	}
 	defer file.Close()
 
-	// 创建可序列化的结构
-	type HostResult struct {
-		Host            string                              `json:"host"`
-		OS              string                              `json:"os"`
-		TCPPorts        []int                               `json:"tcp_ports,omitempty"`
-		UDPPorts        []int                               `json:"udp_ports,omitempty"`
-		Services        map[int]*scanner.ServiceFingerprint `json:"services,omitempty"`
-		Vulnerabilities []*scanner.DetectedVulnerability    `json:"vulnerabilities,omitempty"`
-	}
-
-	type JSONResult struct {
-		ScanTime   string       `json:"scan_time"`
-		AliveHosts []HostResult `json:"alive_hosts"`
-	}
-
 	result := JSONResult{
-		ScanTime: r.ScanTime,
+		ScanTime:   r.ScanTime,
+		TotalHosts: len(r.AliveHosts),
 	}
 
 	for _, host := range r.AliveHosts {
@@ -470,21 +629,199 @@ func (r *Result) saveAsJSON(filename string) error {
 			}
 		}
 
-		// 漏洞信息
-		if vulns, exists := r.Vulnerabilities[host]; exists {
-			// 将值切片转换为指针切片
-			ptrVulns := make([]*scanner.DetectedVulnerability, len(vulns.Vulnerabilities))
-			for i := range vulns.Vulnerabilities {
-				ptrVulns[i] = &vulns.Vulnerabilities[i]
-			}
-			hostResult.Vulnerabilities = ptrVulns
+		// 漏洞信息 - 直接使用值切片
+		if vulns, exists := r.Vulnerabilities[host]; exists && len(vulns.Vulnerabilities) > 0 {
+			hostResult.Vulnerabilities = vulns.Vulnerabilities
 		}
 
 		result.AliveHosts = append(result.AliveHosts, hostResult)
 	}
 
-	// 编码为JSON
+	// 编码为JSON，使用更友好的缩进
 	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
+	encoder.SetIndent("", "    ")
 	return encoder.Encode(result)
+}
+
+// LoadFromFile 从文件加载结果（支持多种格式）
+func (r *Result) LoadFromFile(filename string) error {
+	// 根据文件扩展名确定格式
+	ext := strings.ToLower(filename[strings.LastIndex(filename, ".")+1:])
+
+	switch ext {
+	case "json":
+		return r.loadFromJSON(filename)
+	case "csv", "tsv":
+		return r.loadFromCSV(filename)
+	default:
+		return fmt.Errorf("不支持的文件格式: %s", ext)
+	}
+}
+
+// loadFromJSON 从JSON文件加载结果
+func (r *Result) loadFromJSON(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	var result JSONResult
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&result); err != nil {
+		return err
+	}
+
+	// 将加载的数据设置到当前Result实例中
+	r.ScanTime = result.ScanTime
+
+	// 重新构建数据结构
+	r.AliveHosts = make([]string, 0)
+	r.OpenPorts = make(map[string][]int)
+	r.OSInfo = make(map[string]string)
+	r.ServiceInfo = make(map[string]map[int]*scanner.ServiceFingerprint)
+	r.Vulnerabilities = make(map[string]*scanner.VulnerabilityScanResult)
+
+	for _, hostResult := range result.AliveHosts {
+		r.AliveHosts = append(r.AliveHosts, hostResult.Host)
+		r.OSInfo[hostResult.Host] = hostResult.OS
+		r.OpenPorts[hostResult.Host] = hostResult.TCPPorts
+		r.ServiceInfo[hostResult.Host] = hostResult.Services
+
+		if len(hostResult.Vulnerabilities) > 0 {
+			r.Vulnerabilities[hostResult.Host] = &scanner.VulnerabilityScanResult{
+				Host:            hostResult.Host,
+				OS:              hostResult.OS,
+				OpenPorts:       hostResult.TCPPorts,
+				Vulnerabilities: hostResult.Vulnerabilities,
+				ScanTimestamp:   time.Now(),
+			}
+		}
+	}
+
+	return nil
+}
+
+// loadFromCSV 从CSV/TSV文件加载结果
+func (r *Result) loadFromCSV(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// 检测分隔符
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = -1 // 允许字段数量可变
+
+	// 读取所有行
+	records, err := reader.ReadAll()
+	if err != nil {
+		return err
+	}
+
+	// 重新初始化数据结构
+	r.AliveHosts = make([]string, 0)
+	r.OpenPorts = make(map[string][]int)
+	r.OSInfo = make(map[string]string)
+	r.ServiceInfo = make(map[string]map[int]*scanner.ServiceFingerprint)
+	r.Vulnerabilities = make(map[string]*scanner.VulnerabilityScanResult)
+
+	// 跳过表头，从数据行开始处理
+	for i := 1; i < len(records); i++ {
+		if len(records[i]) < 9 {
+			continue // 跳过不完整的行
+		}
+
+		host := records[i][0]
+		os := records[i][1]
+		portStr := records[i][2]
+		protocol := records[i][3]
+		serviceName := records[i][4]
+		serviceVersion := records[i][5]
+		confidenceStr := records[i][6]
+		vulnCountStr := records[i][7]
+		scanTime := records[i][8]
+
+		// 设置扫描时间
+		if r.ScanTime == "" {
+			r.ScanTime = scanTime
+		}
+
+		// 添加主机到存活列表
+		if !contains(r.AliveHosts, host) {
+			r.AliveHosts = append(r.AliveHosts, host)
+		}
+
+		// 设置操作系统信息
+		r.OSInfo[host] = os
+
+		// 处理端口信息
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			continue
+		}
+
+		// 添加到开放端口列表
+		if protocol == "TCP" {
+			if _, exists := r.OpenPorts[host]; !exists {
+				r.OpenPorts[host] = make([]int, 0)
+			}
+			if !containsInt(r.OpenPorts[host], port) {
+				r.OpenPorts[host] = append(r.OpenPorts[host], port)
+			}
+		}
+
+		// 处理服务信息
+		if serviceName != "" {
+			if _, exists := r.ServiceInfo[host]; !exists {
+				r.ServiceInfo[host] = make(map[int]*scanner.ServiceFingerprint)
+			}
+
+			confidence, _ := strconv.Atoi(confidenceStr)
+			r.ServiceInfo[host][port] = &scanner.ServiceFingerprint{
+				ServiceName:    serviceName,
+				ServiceVersion: serviceVersion,
+				Confidence:     confidence,
+				Protocol:       protocol,
+				Port:           port,
+			}
+		}
+
+		// 处理漏洞信息（简化处理）
+		vulnCount, _ := strconv.Atoi(vulnCountStr)
+		if vulnCount > 0 {
+			if _, exists := r.Vulnerabilities[host]; !exists {
+				r.Vulnerabilities[host] = &scanner.VulnerabilityScanResult{
+					Host:            host,
+					OS:              os,
+					OpenPorts:       r.OpenPorts[host],
+					Vulnerabilities: make([]scanner.DetectedVulnerability, 0),
+					ScanTimestamp:   time.Now(),
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+// 辅助函数：检查字符串切片是否包含某个元素
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
+// 辅助函数：检查整数切片是否包含某个元素
+func containsInt(slice []int, item int) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }

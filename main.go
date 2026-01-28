@@ -50,6 +50,8 @@ func showFullHelp() {
 	fmt.Println("  -delay: 延迟类型(constant/random/function1-4)")
 	fmt.Println("  -delayVal: 延迟基础值(毫秒)")
 	fmt.Println("  -timeout: 连接超时时间(秒)")
+	fmt.Println("  -udp: 启用UDP扫描（默认启用）")
+	fmt.Println("  -format: 输出格式(txt/csv/tsv/json)，默认为txt")
 	fmt.Println("  -i, --interactive: 启用交互模式")
 	fmt.Println("=====================================================")
 	fmt.Println()
@@ -393,12 +395,21 @@ func runCommandLineMode() {
 	fmt.Println("\n=== 扫描结果 ===")
 	result.Print()
 
-	// 6. 保存结果
-	if err := result.SaveToFile("scan_result.txt", "txt"); err != nil {
+	// 6. 保存结果 - 命令行模式下使用指定格式
+	filename := "scan_result." + params.Format
+	if err := result.SaveToFile(filename, params.Format); err != nil {
 		logger.Errorf("扫描结果保存失败: %v", err)
 		fmt.Printf("扫描结果保存失败: %v\n", err)
 	} else {
-		fmt.Println("扫描结果已保存到 scan_result.txt")
+		fmt.Printf("扫描结果已保存到 %s\n", filename)
+	}
+
+	// 同时自动保存一份TXT格式作为备份
+	if params.Format != "txt" {
+		backupFilename := "scan_result_backup.txt"
+		if err := result.SaveToFile(backupFilename, "txt"); err == nil {
+			fmt.Printf("备份结果已保存到 %s\n", backupFilename)
+		}
 	}
 
 	fmt.Println("\n扫描完成！")
@@ -604,14 +615,10 @@ func performScan(params *controller.ScanParams, ui *ui.InteractiveUI) {
 
 	ui.ShowScanResult(result)
 
-	// 7. 保存结果
-	format := ui.AskForSaveFormat()
-	filename := "scan_result." + format
-	if err := result.SaveToFile(filename, format); err != nil {
+	// 7. 保存结果 - 自动保存为TXT格式
+	if err := result.SaveWithOptions(); err != nil {
 		logger.Errorf("扫描结果保存失败: %v", err)
 		fmt.Printf("扫描结果保存失败: %v\n", err)
-	} else {
-		fmt.Printf("扫描结果已保存到 %s\n", filename)
 	}
 
 	fmt.Println("\n扫描完成！")
