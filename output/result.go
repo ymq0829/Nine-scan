@@ -1,6 +1,7 @@
 package output
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -203,10 +204,53 @@ func (r *Result) SaveWithOptions() error {
 	}
 
 	fmt.Println("扫描结果已自动保存为TXT格式")
-	fmt.Println("如果需要其他格式，请使用以下命令:")
-	fmt.Println("  - 保存为CSV格式: project.exe -format csv")
-	fmt.Println("  - 保存为TSV格式: project.exe -format tsv")
-	fmt.Println("  - 保存为JSON格式: project.exe -format json")
+
+	// 询问用户是否需要保存其他格式
+	fmt.Print("\n是否需要保存为其他格式？(y/n，默认n): ")
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(strings.ToLower(input))
+
+	if input == "y" || input == "yes" {
+		// 显示格式选择菜单
+		fmt.Println("\n请选择保存格式:")
+		fmt.Println("1. CSV格式")
+		fmt.Println("2. TSV格式")
+		fmt.Println("3. JSON格式")
+		fmt.Println("4. 取消")
+		fmt.Print("请输入选择 (1-4): ")
+
+		choiceInput, _ := reader.ReadString('\n')
+		choiceInput = strings.TrimSpace(choiceInput)
+
+		switch choiceInput {
+		case "1":
+			filename := "scan_result.csv"
+			if err := r.SaveToCSV(filename); err != nil {
+				fmt.Printf("CSV格式保存失败: %v\n", err)
+			} else {
+				fmt.Printf("CSV格式结果已保存到 %s\n", filename)
+			}
+		case "2":
+			filename := "scan_result.tsv"
+			if err := r.SaveToTSV(filename); err != nil {
+				fmt.Printf("TSV格式保存失败: %v\n", err)
+			} else {
+				fmt.Printf("TSV格式结果已保存到 %s\n", filename)
+			}
+		case "3":
+			filename := "scan_result.json"
+			if err := r.saveAsJSON(filename); err != nil {
+				fmt.Printf("JSON格式保存失败: %v\n", err)
+			} else {
+				fmt.Printf("JSON格式结果已保存到 %s\n", filename)
+			}
+		case "4":
+			fmt.Println("取消保存其他格式")
+		default:
+			fmt.Println("无效选择，取消保存其他格式")
+		}
+	}
 
 	return nil
 }
